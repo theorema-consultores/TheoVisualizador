@@ -22,3 +22,21 @@ test('rejects a pending report response', async () => {
     /ainda não foi concluída/i
   );
 });
+
+test('aborts a download that exceeds its timeout', async () => {
+  await assert.rejects(
+    () => downloadResult(protocol, {
+      timeoutMs: 1,
+      fetchImpl: async (_url, options) => new Promise((_, reject) => options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError'))))
+    }),
+    /30 segundos|tempo/i
+  );
+});
+
+test('stops streamed data once the ZIP limit is exceeded', async () => {
+  const stream = new ReadableStream({ start(controller) { controller.enqueue(new Uint8Array(4)); controller.close(); } });
+  await assert.rejects(
+    () => downloadResult(protocol, { maxBytes: 3, fetchImpl: async () => new Response(stream, { status: 200 }) }),
+    /limite/i
+  );
+});

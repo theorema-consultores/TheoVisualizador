@@ -33,14 +33,15 @@ export function renderBalancete(container, model) {
   const content = element(doc, 'div');
   const draw = ([key, labelKey, label]) => {
     content.replaceChildren();
-    const previous = Object.fromEntries(aggregate(model.previous, key, labelKey).map(item => [item.code, item]));
-    const current = Object.fromEntries(aggregate(model.current, key, labelKey).map(item => [item.code, item]));
+    const named = item => ({ ...item, label: GLOSSARY[key]?.[item.code] ?? item.label });
+    const previous = Object.fromEntries(aggregate(model.previous, key, labelKey).map(named).map(item => [item.code, item]));
+    const current = Object.fromEntries(aggregate(model.current, key, labelKey).map(named).map(item => [item.code, item]));
     const rows = [...new Set([...Object.keys(previous), ...Object.keys(current)])].map(code => ({ code, previous: previous[code] ?? { total: 0, label: current[code]?.label ?? code }, current: current[code] ?? { total: 0, label: previous[code]?.label ?? code } })).sort((a, b) => b.current.total - a.current.total);
     const filter = doc.createElement('input'); filter.type = 'search'; filter.placeholder = 'Filtrar por código ou descrição'; content.append(filter);
     const ranking = element(doc, 'section'); ranking.append(element(doc, 'h2', 'Top 8 - Exercício Atual'));
     rows.slice(0, 8).forEach(row => ranking.append(element(doc, 'p', `${row.code} · ${row.current.label}: ${money(row.current.total)}`)));
     content.append(ranking);
-    const table = element(doc, 'table'); const head = element(doc, 'thead'); const header = element(doc, 'tr'); ['Código', 'Descrição', String(model.previousYear), String(model.currentYear), 'Variação'].forEach(value => header.append(element(doc, 'th', value))); head.append(header); table.append(head);
+    const table = element(doc, 'table'); const head = element(doc, 'thead'); const header = element(doc, 'tr'); ['Código', 'Descrição', String(model.previousYear), String(model.currentYear), 'Variação'].forEach(value => { const th = element(doc, 'th'); const button = element(doc, 'button', value); button.type='button'; button.addEventListener('click', () => draw([key, labelKey, label])); th.append(button); header.append(th); }); head.append(header); table.append(head);
     const body = element(doc, 'tbody');
     rows.forEach(row => {
       const tr = element(doc, 'tr');
