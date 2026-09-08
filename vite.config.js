@@ -4,7 +4,7 @@ export default defineConfig({
   base: './',
   build: {
     rollupOptions: {
-      input: 'index.html'
+      input: { main: 'index.html', balanceteReceita: 'dashboards/balancete-receita/index.html' }
     }
   }
 });

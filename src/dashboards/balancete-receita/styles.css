@@ -1,0 +1,10 @@
+@import '../../styles.css';
+.balancete { max-width: 88rem; margin: 0 auto; padding: 2rem; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.kpis article, table { background: white; border: 1px solid #d9e0d9; border-radius: .5rem; padding: 1rem; }
+.kpis strong { display: block; font-size: 1.25rem; margin-top: .4rem; }
+[role="tablist"] { display: flex; gap: .5rem; overflow: auto; margin-bottom: 1rem; }
+[role="tab"] { white-space: nowrap; padding: .55rem .75rem; border: 1px solid #b8c9bb; background: white; border-radius: .35rem; }
+[role="tab"][aria-selected="true"] { background: #195c3c; color: white; }
+input { width: 100%; max-width: 25rem; padding: .6rem; margin-bottom: 1rem; }
+table { width: 100%; border-collapse: collapse; overflow: hidden; } th, td { text-align: left; padding: .65rem; border-bottom: 1px solid #e5e9e4; } td:nth-child(n+3), th:nth-child(n+3) { text-align: right; }
