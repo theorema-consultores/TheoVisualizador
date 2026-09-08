@@ -37,3 +37,13 @@ test('renders expandable month-by-month detail', () => {
   assert.equal(container.querySelectorAll('details').length > 0, true);
   assert.match(container.textContent, /Janeiro/);
 });
+
+test('sorts table rows when a column header is clicked', () => {
+  const dom = new JSDOM('<main id="app"></main>');
+  const container = dom.window.document.getElementById('app');
+  renderBalancete(container, { ...model, current: [{ ...row, receita: 'A', total: 1 }, { ...row, receita: 'B', total: 2 }] });
+  const header = [...container.querySelectorAll('th button')].find(button => button.textContent === 'Código');
+  header.click();
+  header.click();
+  assert.equal(container.querySelector('tbody tr td').textContent, 'B');
+});

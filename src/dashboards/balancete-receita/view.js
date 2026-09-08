@@ -31,17 +31,19 @@ export function renderBalancete(container, model) {
   root.append(kpis);
   const tabs = element(doc, 'div'); tabs.setAttribute('role', 'tablist');
   const content = element(doc, 'div');
+  let sortColumn = 'current'; let sortDirection = -1;
   const draw = ([key, labelKey, label]) => {
     content.replaceChildren();
     const named = item => ({ ...item, label: GLOSSARY[key]?.[item.code] ?? item.label });
     const previous = Object.fromEntries(aggregate(model.previous, key, labelKey).map(named).map(item => [item.code, item]));
     const current = Object.fromEntries(aggregate(model.current, key, labelKey).map(named).map(item => [item.code, item]));
-    const rows = [...new Set([...Object.keys(previous), ...Object.keys(current)])].map(code => ({ code, previous: previous[code] ?? { total: 0, label: current[code]?.label ?? code }, current: current[code] ?? { total: 0, label: previous[code]?.label ?? code } })).sort((a, b) => b.current.total - a.current.total);
+    const empty = label => ({ total: 0, label, months: Array(12).fill(0), count: 0 });
+    const rows = [...new Set([...Object.keys(previous), ...Object.keys(current)])].map(code => ({ code, previous: previous[code] ?? empty(current[code]?.label ?? code), current: current[code] ?? empty(previous[code]?.label ?? code) })).sort((a, b) => { const av = sortColumn === 'code' ? a.code : sortColumn === 'label' ? a.current.label : a[sortColumn].total; const bv = sortColumn === 'code' ? b.code : sortColumn === 'label' ? b.current.label : b[sortColumn].total; return typeof av === 'string' ? sortDirection * av.localeCompare(bv, 'pt-BR') : sortDirection * (av - bv); });
     const filter = doc.createElement('input'); filter.type = 'search'; filter.placeholder = 'Filtrar por código ou descrição'; content.append(filter);
     const ranking = element(doc, 'section'); ranking.append(element(doc, 'h2', 'Top 8 - Exercício Atual'));
     rows.slice(0, 8).forEach(row => ranking.append(element(doc, 'p', `${row.code} · ${row.current.label}: ${money(row.current.total)}`)));
     content.append(ranking);
-    const table = element(doc, 'table'); const head = element(doc, 'thead'); const header = element(doc, 'tr'); ['Código', 'Descrição', String(model.previousYear), String(model.currentYear), 'Variação'].forEach(value => { const th = element(doc, 'th'); const button = element(doc, 'button', value); button.type='button'; button.addEventListener('click', () => draw([key, labelKey, label])); th.append(button); header.append(th); }); head.append(header); table.append(head);
+    const columns = [['code','Código'],['label','Descrição'],['previous',String(model.previousYear)],['current',String(model.currentYear)],['current','Variação']]; const table = element(doc, 'table'); const head = element(doc, 'thead'); const header = element(doc, 'tr'); columns.forEach(([column,value]) => { const th = element(doc, 'th'); const button = element(doc, 'button', value); button.type='button'; button.addEventListener('click', () => { sortDirection = sortColumn === column ? -sortDirection : 1; sortColumn = column; draw([key, labelKey, label]); }); th.append(button); header.append(th); }); head.append(header); table.append(head);
     const body = element(doc, 'tbody');
     rows.forEach(row => {
       const tr = element(doc, 'tr');

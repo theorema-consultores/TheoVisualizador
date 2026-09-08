@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { loadBalancete, parseResource, formatVariation } from '../../../src/dashboards/balancete-receita/data.js';
+import { GLOSSARY } from '../../../src/dashboards/balancete-receita/glossary.js';
 
 const record = (year, overrides = {}) => ({
   tipoNatureza: 'A', numeroNaturezaReceita: '1.1.1', descNaturezaReceita: 'Receita',
@@ -27,4 +28,11 @@ test('uses fallback components for incomplete resource codes', () => {
 
 test('marks a zero-base percentage variation as not applicable', () => {
   assert.equal(formatVariation(20, 0), '—');
+});
+
+test('includes the complete legacy resource glossary', () => {
+  assert.equal(GLOSSARY.origem['14'], 'Cessão Onerosa – Pré-Sal');
+  assert.equal(GLOSSARY.aplicacao['06'], 'SUAS');
+  assert.equal(GLOSSARY.desdobramento['07'], 'Programas/Transferências Voluntárias Anteriores a 2013 Reclassificados');
+  assert.equal(GLOSSARY.detalhamento['27'], 'PAS – Programa Único de Assistência - Deliberação n° 59/2023 do CEAS/PR');
 });
