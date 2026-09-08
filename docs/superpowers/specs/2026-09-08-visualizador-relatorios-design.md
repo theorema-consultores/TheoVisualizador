@@ -114,6 +114,8 @@ dist/
 
 Não haverá página inicial funcional para navegação. Sem um protocolo válido ou uma transferência em andamento, a aplicação exibirá um estado de erro apropriado.
 
+O protocolo será normalizado removendo espaços externos e convertendo letras para minúsculas. O formato aceito será `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`, com cada `x` hexadecimal; não haverá restrição adicional de versão ou variante do UUID.
+
 ## 6. Atualização e recuperação
 
 O `sessionStorage` é isolado por aba e guardará o protocolo da emissão corrente. Depois do redirecionamento, uma atualização da página seguirá este fluxo:
@@ -152,6 +154,8 @@ Versão inicial:
 - `dashboard.version`: versão semântica do contrato de dados esperado pelo dashboard.
 
 Todos os campos são obrigatórios e não são permitidos valores vazios. As versões devem seguir `MAJOR.MINOR.PATCH`.
+
+O identificador do dashboard deverá usar letras minúsculas, números e hífens, começar e terminar com letra ou número e não conter caminhos. Na versão `1.0.0`, campos adicionais no metadado serão rejeitados; qualquer ampliação do contrato exigirá nova `schemaVersion`.
 
 Na primeira fase, a compatibilidade será exata: o núcleo somente abrirá um dashboard quando o registro contiver exatamente o `id` e a `version` solicitados. Migrações ou adaptadores para versões anteriores serão adicionados apenas quando houver necessidade real.
 
@@ -202,6 +206,16 @@ startDashboard({
 - Retorna dados prontos para apresentação.
 - Produz erros específicos e compreensíveis.
 
+A abstração `archive` oferecerá somente operações assíncronas e seguras:
+
+- `listEntries()`: lista caminhos, tamanhos e tipos das entradas aceitas.
+- `findByBasename(name)`: encontra arquivos pelo nome base, sem diferenciar maiúsculas e minúsculas.
+- `readBytes(path)`: lê uma entrada como bytes.
+- `readText(path)`: decodifica uma entrada como UTF-8 estrito.
+- `readJson(path)`: decodifica e interpreta uma entrada como JSON.
+
+As operações respeitarão os limites globais e produzirão erros tipados. O dashboard não receberá a instância interna da biblioteca de ZIP nem acesso de escrita ao arquivo.
+
 ### 9.2 `render(container, model)`
 
 - Recebe apenas o modelo validado.
@@ -248,6 +262,16 @@ O núcleo deverá distinguir as seguintes falhas:
 - Falha no processamento específico do dashboard.
 - Falha inesperada de renderização.
 
+No download, as respostas conhecidas terão mensagens específicas:
+
+- `202`: execução ainda não concluída.
+- `401` ou `403`: resultado não disponível publicamente.
+- `404` ou `410`: protocolo inexistente, expirado ou sem resultado.
+- `429`: excesso temporário de solicitações.
+- Outros códigos não bem-sucedidos: indisponibilidade acompanhada do código HTTP.
+
+Uma resposta HTML no lugar do ZIP será rejeitada como conteúdo inesperado.
+
 A interface apresentará título simples, explicação compreensível, código técnico curto e ação possível. Pilhas e detalhes internos ficarão restritos ao console de desenvolvimento.
 
 Uma falha do dashboard não poderá resultar em página vazia.
@@ -263,6 +287,12 @@ Os limites iniciais serão centralizados no núcleo:
 - Uma emissão ativa por aba.
 
 Os dashboards poderão impor limites menores aos seus próprios dados, mas não alterar os limites globais.
+
+### 12.1 Compatibilidade de navegador
+
+A aplicação terá como alvo navegadores modernos com suporte nativo a ES Modules, `fetch`, `AbortController`, `sessionStorage` e IndexedDB. A descompactação usará a biblioteca empacotada no build e não dependerá de `DecompressionStream`.
+
+O layout deverá funcionar em telas móveis e desktop. A matriz suportada será composta pelas duas versões estáveis mais recentes de Chrome, Edge e Firefox e pela versão estável mais recente do Safari. O fluxo completo terá teste automatizado em Chromium e verificação manual de fumaça nos demais navegadores antes de uma publicação de produção. Recursos sem suporte deverão resultar em erro compreensível, nunca em página vazia.
 
 ## 13. Segurança e privacidade
 
@@ -294,20 +324,22 @@ O JSON deverá possuir uma coleção `resultados` com exatamente dois exercício
 - `exercicio`: ano inteiro.
 - `registros`: coleção de registros analíticos.
 
-Os registros utilizados deverão conter:
+Os registros analíticos utilizados deverão conter:
 
-- `tipoNatureza`.
-- `numeroNaturezaReceita`.
-- `descNaturezaReceita`.
-- `numeroReceita`.
-- `numeroRecurso`.
-- `valorRealizado1` até `valorRealizado12`.
-- `totalMeses`.
-- `entidadeNome`.
+- `tipoNatureza`: texto.
+- `numeroNaturezaReceita`: texto ou número, normalizado como texto sem espaços externos.
+- `descNaturezaReceita`: texto.
+- `numeroRecurso`: texto ou número, normalizado como texto sem espaços externos.
+- `valorRealizado1` até `valorRealizado12`: números finitos.
+- `totalMeses`: número finito.
 
 Somente registros cujo `tipoNatureza` seja exatamente `A` participarão dos cálculos. Valores monetários deverão ser números JSON finitos. Campos obrigatórios inválidos não serão convertidos silenciosamente em zero.
 
-Os exercícios serão ordenados numericamente: o menor será o anterior e o maior será o atual.
+Os exercícios deverão ser diferentes e serão ordenados numericamente: o menor será o anterior e o maior será o atual. Exercícios duplicados serão rejeitados.
+
+`entidadeNome` será opcional e, quando informado, deverá ser texto. O nome da entidade será o primeiro valor não vazio encontrado nos registros dos dois exercícios. Quando nenhum registro informar o nome, o cabeçalho exibirá `Entidade não informada`.
+
+Um exercício sem registros de tipo `A` será válido. Nesse caso, seus indicadores serão zero e as visualizações correspondentes permanecerão vazias, sem transformar a ausência de movimento em erro técnico.
 
 ### 14.3 Indicadores
 
@@ -325,6 +357,8 @@ O seletor terá os doze meses e começará no mês corrente do navegador.
 A soma de `totalMeses` dos registros será a fonte dos totais anuais. Os campos `valorRealizado1` a `valorRealizado12` serão a fonte dos totais mensais.
 
 A variação absoluta será `atual - anterior`. A variação percentual será `(atual - anterior) / abs(anterior) * 100`. Quando o valor anterior for zero, a porcentagem será exibida como não calculável, em vez de apresentar um percentual artificial.
+
+Valores monetários serão apresentados em BRL com localidade `pt-BR`. Cálculos usarão números JavaScript; o contrato não aceitará valores monetários enviados como texto formatado.
 
 ### 14.4 Visões analíticas
 
@@ -350,11 +384,27 @@ Cada visão terá:
 - Quantidade de registros por exercício.
 - Participação no total do exercício atual.
 
+A primeira visão ativa será Receita e descrição. Rankings e tabelas começarão ordenados pelo total do exercício atual em ordem decrescente.
+
 ### 14.5 Máscara de recurso
 
 O código de recurso será decomposto nos componentes de origem, aplicação, desdobramento e detalhamento. Os glossários serão dados versionados do próprio dashboard e não ficarão misturados à lógica de renderização.
 
 Códigos desconhecidos receberão uma descrição genérica e continuarão visíveis. A ausência de uma descrição no glossário não descartará valores financeiros.
+
+Para compatibilidade com a emissão atual, a versão `1.0.0` seguirá este algoritmo:
+
+1. Converter o código para texto e remover espaços externos.
+2. Substituir hífens por pontos.
+3. Separar o resultado por pontos.
+4. Usar o terceiro segmento como origem.
+5. Usar o quarto segmento como aplicação.
+6. Usar o quinto segmento como desdobramento.
+7. Usar o sexto segmento como detalhamento.
+
+Quando o segmento estiver ausente, origem e aplicação usarão o código `99`, enquanto desdobramento e detalhamento usarão `00`. O código integral continuará sendo usado na visão Por recurso.
+
+Os glossários iniciais serão migrados da implementação presente em `source-base/balancete-receita/index.html` e cobertos por testes de regressão.
 
 ## 15. Testes
 
@@ -379,7 +429,9 @@ Códigos desconhecidos receberão uma descrição genérica e continuarão visí
 - Localização do arquivo em raiz e subpastas.
 - Arquivo ausente e duplicado.
 - Quantidade inválida de exercícios.
+- Exercícios duplicados e exercícios sem registros analíticos.
 - Campos ausentes e valores monetários inválidos.
+- Seleção do nome da entidade e fallback sem nome.
 - Filtro por `tipoNatureza`.
 - Ordenação dos exercícios.
 - Agregações anuais e mensais.
@@ -419,6 +471,8 @@ A base estará pronta quando:
 10. Conteúdo de dados não for executado como HTML.
 11. Testes, lint e build passarem antes da publicação.
 12. O resultado publicado funcionar no subcaminho do GitHub Pages.
+13. Atualizar ou abrir o relatório em navegador sem recurso obrigatório produzir erro legível.
+14. Um relatório válido sem registros analíticos exibir estado vazio e totais iguais a zero.
 
 ## 18. Evolução de dashboards
 
