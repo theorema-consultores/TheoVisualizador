@@ -1,0 +1,14 @@
+{
+  "name": "theo-visualizador",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/run-tests.mjs"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}
