@@ -16,19 +16,29 @@ function transform(record) {
   return { receita: String(record.numeroNaturezaReceita).trim(), descricao: record.descNaturezaReceita.trim(), recurso: resource, months, total: number(record.totalMeses, 'totalMeses'), entityName: typeof record.entidadeNome === 'string' ? record.entidadeNome.trim() : '', ...parseResource(resource) };
 }
 
-export async function loadBalancete(archive) {
+function parseExecutionIdentification(value) {
+  const text = String(value ?? '');
+  return {
+    user: text.match(/Usuário:\s*([^.]*)\./i)?.[1]?.trim() || 'Não informado',
+    dateTime: text.match(/Emissão:\s*(.+?)\.\s*Protocolo:/i)?.[1]?.trim() || 'Não informada'
+  };
+}
+
+export async function loadBalancete(archive, { protocol = '' } = {}) {
   const files = archive.findByBasename('balancete-receita.json');
   if (files.length !== 1) throw new Error(files.length ? 'O ZIP possui mais de um balancete-receita.json.' : 'O ZIP não contém balancete-receita.json.');
   const results = archive.readJson(files[0])?.resultados;
   if (!Array.isArray(results) || results.length !== 2) throw new Error('O balancete deve possuir exatamente dois exercícios.');
-  const years = results.map(result => ({ year: result?.exercicio, records: result?.registros }));
+  const years = results.map(result => ({ year: result?.exercicio, records: result?.registros, identification: parseExecutionIdentification(result?.relatorio?.siaficIdentificacao) }));
   if (!years.every(item => Number.isInteger(item.year) && Array.isArray(item.records)) || years[0].year === years[1].year) throw new Error('Os exercícios do balancete são inválidos.');
   years.sort((a, b) => a.year - b.year);
   const convert = item => item.records.map(transform).filter(Boolean);
   const previous = convert(years[0]);
   const current = convert(years[1]);
   const entityName = [...previous, ...current].map(record => record.entityName).find(Boolean) ?? 'Entidade não informada';
-  return { entityName, previousYear: years[0].year, currentYear: years[1].year, previous, current };
+  const user = years.map(item => item.identification.user).find(value => value !== 'Não informado') ?? 'Não informado';
+  const issues = years.map(item => ({ year: item.year, dateTime: item.identification.dateTime }));
+  return { entityName, previousYear: years[0].year, currentYear: years[1].year, previous, current, execution: { protocol: protocol || 'Não informado', user, issues } };
 }
 
 export function formatVariation(current, previous) {

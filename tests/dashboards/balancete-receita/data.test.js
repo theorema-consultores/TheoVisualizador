@@ -22,6 +22,32 @@ test('keeps analytical records and orders exercises', async () => {
   assert.equal(model.entityName, 'Prefeitura');
 });
 
+test('extracts execution user, issue times and protocol from the real report metadata', async () => {
+  const archive = { findByBasename: () => ['balancete-receita.json'], readJson: () => ({ resultados: [
+    {
+      exercicio: 2026,
+      relatorio: { siaficIdentificacao: 'Sistema Contábil - Betha Sistemas. Usuário: brunotheorema. Emissão: 08/09/2026, às 21:12:32. Protocolo: ' },
+      registros: [record(2026)]
+    },
+    {
+      exercicio: 2025,
+      relatorio: { siaficIdentificacao: 'Sistema Contábil - Betha Sistemas. Usuário: brunotheorema. Emissão: 08/09/2026, às 21:11:49. Protocolo: ' },
+      registros: [record(2025)]
+    }
+  ] }) };
+
+  const model = await loadBalancete(archive, { protocol: '51dcd516-cbe2-4e35-9366-20a6b65e5af5' });
+
+  assert.deepEqual(model.execution, {
+    protocol: '51dcd516-cbe2-4e35-9366-20a6b65e5af5',
+    user: 'brunotheorema',
+    issues: [
+      { year: 2025, dateTime: '08/09/2026, às 21:11:49' },
+      { year: 2026, dateTime: '08/09/2026, às 21:12:32' }
+    ]
+  });
+});
+
 test('uses fallback components for incomplete resource codes', () => {
   assert.deepEqual(parseResource('1.500'), { origem: '99', aplicacao: '99', desdobramento: '00', detalhamento: '00' });
 });
