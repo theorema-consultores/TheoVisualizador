@@ -1,4 +1,5 @@
 import './styles.css';
+import './dashboards/balancete-receita/styles.css';
 import { openArchive } from './core/archive.js';
 import { downloadResult } from './core/download.js';
 import { resolveReport } from './core/resolver.js';
