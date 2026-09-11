@@ -4,13 +4,21 @@
   --brand-navy-deep: #202a43;
   --brand-brown: #806764;
   --brand-brown-soft: #f2eceb;
+  --action: #3475c1;
+  --action-dark: #1e4471;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
   --surface: #f6f7fa;
   --surface-raised: #fff;
   --line: #dfe3eb;
   --text: #202a43;
   --muted: #68738a;
   --focus: #91a8d4;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-ui: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   color: var(--text);
   background: var(--surface);
 }
@@ -26,6 +34,8 @@
   --brand-brown: #bd9e99;
   --brand-brown-soft: #382d31;
   --focus: #b7c9f0;
+  --action: #7faadc;
+  --action-dark: #a7c4e7;
 }
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; background: var(--surface); }
@@ -37,8 +47,8 @@ body { margin: 0; min-height: 100vh; background: var(--surface); }
 .protocol-form label { color: var(--brand-navy-deep); font-size: .82rem; font-weight: 700; }
 .protocol-form input { min-height: 2.75rem; padding: .65rem .8rem; color: var(--text); font: inherit; border: 1px solid #b9c3d4; border-radius: 5px; }
 .protocol-form input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.protocol-form button { justify-self: start; min-height: 2.75rem; padding: .65rem 1rem; color: #fff; font: 700 .86rem inherit; cursor: pointer; background: var(--brand-navy); border: 0; border-radius: 5px; }
-.protocol-form button:hover, .protocol-form button:focus-visible { background: var(--brand-navy-deep); outline: 2px solid var(--focus); outline-offset: 2px; }
+.protocol-form button { justify-self: start; min-height: 2.75rem; padding: .65rem 1rem; color: #fff; font: 700 .86rem inherit; cursor: pointer; background: var(--action); border: 0; border-radius: 5px; }
+.protocol-form button:hover, .protocol-form button:focus-visible { background: var(--action-dark); outline: 2px solid var(--focus); outline-offset: 2px; }
 .app-nav { position: sticky; top: 0; z-index: 10; display: grid; grid-template-columns: 170px 1fr auto; gap: 1.5rem; align-items: center; padding: .75rem max(2rem, calc((100vw - 72rem) / 2)); background: rgb(255 255 255 / 96%); border-bottom: 1px solid var(--line); box-shadow: 0 2px 10px rgb(32 42 67 / 7%); backdrop-filter: blur(12px); }
 .nav-actions { display: flex; gap: .55rem; align-items: center; }
 .theme-toggle { width: 2.35rem; height: 2.35rem; color: var(--brand-navy-deep); font-size: 1.1rem; cursor: pointer; background: transparent; border: 1px solid #aebbd2; border-radius: 5px; }
@@ -46,10 +56,10 @@ body { margin: 0; min-height: 100vh; background: var(--surface); }
 .brand img { display: block; width: 150px; height: auto; }
 .visualization-menu { display: flex; gap: .35rem; min-width: 0; overflow-x: auto; }
 .visualization-menu label { align-self: center; margin-right: .5rem; color: var(--muted); font-size: .78rem; font-weight: 700; }
-.visualization-menu select { min-width: 13rem; padding: .55rem 2rem .55rem .75rem; color: var(--brand-navy-deep); font: 600 .8rem/1.2 inherit; background: var(--surface-raised); border: 1px solid #aebbd2; border-radius: 5px; }
+.visualization-menu select { z-index: 1; min-width: 13rem; padding: .55rem 2rem .55rem .75rem; color: var(--brand-navy-deep); font: 600 .8rem/1.2 inherit; background: var(--surface-raised); border: 1px solid #aebbd2; border-radius: 5px; }
 .visualization-menu button { flex: 0 0 auto; padding: .55rem .8rem; color: var(--muted); font: 600 .8rem/1.2 inherit; white-space: nowrap; cursor: pointer; background: transparent; border: 1px solid transparent; border-radius: 5px; }
 .visualization-menu button:hover, .visualization-menu button:focus-visible { color: var(--brand-navy-deep); background: #eef1f7; outline: 2px solid var(--focus); outline-offset: 2px; }
-.visualization-menu button[aria-selected="true"] { color: #fff; background: var(--brand-navy); border-color: var(--brand-navy); }
+.visualization-menu button[aria-selected="true"] { color: #fff; background: var(--action); border-color: var(--action); }
 .support-link { display: inline-flex; gap: .4rem; align-items: center; padding: .58rem .8rem; color: var(--brand-navy-deep); font-weight: 700; font-size: .8rem; white-space: nowrap; text-decoration: none; border: 1px solid #aebbd2; border-radius: 5px; }
 .support-link:hover, .support-link:focus-visible { color: #fff; background: var(--brand-navy); outline: 2px solid var(--focus); outline-offset: 2px; }
 [data-theme="dark"] .app-nav { background: rgb(23 28 43 / 96%); box-shadow: 0 2px 10px rgb(0 0 0 / 18%); }
