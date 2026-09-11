@@ -1,6 +1,6 @@
 # Theo Visualizador
 
-Site estático para abrir uma emissão Betha e direcioná-la ao dashboard indicado pelo ZIP.
+Visualizador de emissões Betha com shell único, navegação entre visualizações e dashboards montáveis.
 
 ## Entrada
 
@@ -10,11 +10,13 @@ Abra a página publicada com um protocolo público:
 https://usuario.github.io/repositorio/?protocolo=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-O protocolo é mantido somente na sessão da aba para permitir atualização da página e é retirado da URL após a transferência para o dashboard.
+O protocolo é usado apenas na entrada. Após a transferência, a URL canônica volta para `/` e a sessão da aba mantém o ZIP e o dashboard para permitir atualização sem expor o nome do relatório. Sem protocolo ou sessão ativa, a raiz exibe o campo para informar um protocolo.
+
+O shell usa abas horizontais para até quatro visualizações. A partir de cinco, o seletor muda para um dropdown nativo. O tema claro/escuro pode ser alternado no nav e a preferência fica salva localmente.
 
 ## Contrato do ZIP
 
-O ZIP deve possuir `visualizacao.json` na raiz:
+O ZIP deve possuir `visualizacao.json` na raiz. Ele pode conter uma visualização ou um array de visualizações:
 
 ```json
 {
@@ -24,6 +26,13 @@ O ZIP deve possuir `visualizacao.json` na raiz:
     "version": "1.0.0"
   }
 }
+```
+
+```json
+[
+  { "schemaVersion": "1.0.0", "dashboard": { "id": "balancete-receita", "version": "1.0.0" } },
+  { "schemaVersion": "1.0.0", "dashboard": { "id": "balancete-receita", "version": "1.0.0" } }
+]
 ```
 
 O dashboard de Balancete localiza seu próprio `balancete-receita.json` em qualquer subpasta do ZIP.
