@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseMetadata } from '../../src/core/metadata.js';
+import { parseMetadata, parseMetadataList } from '../../src/core/metadata.js';
 import { resolveDashboard } from '../../src/core/dashboard-registry.js';
 
 const validMetadata = {
@@ -10,6 +10,10 @@ const validMetadata = {
 
 test('parses the exact first metadata schema', () => {
   assert.deepEqual(parseMetadata(JSON.stringify(validMetadata)), validMetadata);
+});
+
+test('parses multiple visualizations from an array manifest', () => {
+  assert.deepEqual(parseMetadataList(JSON.stringify([validMetadata, validMetadata])), [validMetadata, validMetadata]);
 });
 
 test('rejects metadata with a data-file declaration', () => {

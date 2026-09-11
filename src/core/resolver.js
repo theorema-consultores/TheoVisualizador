@@ -1,4 +1,4 @@
-import { parseMetadata } from './metadata.js';
+import { parseMetadataList } from './metadata.js';
 import { normalizeProtocol } from './protocol.js';
 import { resolveDashboard } from './dashboard-registry.js';
 
@@ -9,10 +9,10 @@ export async function resolveReport({ search, session, download, openArchive, tr
   await transferStore.cleanup();
   const bytes = await download(protocol);
   const archive = openArchive(bytes);
-  const metadata = parseMetadata(archive.readText('visualizacao.json'));
-  const dashboard = resolveDashboard(metadata);
+  const metadata = parseMetadataList(archive.readText('visualizacao.json'));
+  const dashboard = resolveDashboard(metadata[0]);
   const transferId = await transferStore.put(bytes);
   session.setItem('report.transferId', transferId);
   navigate(dashboard.page);
-  return dashboard;
+  return { ...dashboard, visualizationCount: metadata.length };
 }

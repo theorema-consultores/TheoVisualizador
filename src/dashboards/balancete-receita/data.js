@@ -24,10 +24,11 @@ function parseExecutionIdentification(value) {
   };
 }
 
-export async function loadBalancete(archive, { protocol = '' } = {}) {
+export async function loadBalancete(archive, { protocol = '', visualizationIndex = 0 } = {}) {
   const files = archive.findByBasename('balancete-receita.json');
-  if (files.length !== 1) throw new Error(files.length ? 'O ZIP possui mais de um balancete-receita.json.' : 'O ZIP não contém balancete-receita.json.');
-  const results = archive.readJson(files[0])?.resultados;
+  if (!files.length) throw new Error('O ZIP não contém balancete-receita.json.');
+  if (!files[visualizationIndex]) throw new Error('O ZIP não contém os dados desta visualização.');
+  const results = archive.readJson(files[visualizationIndex])?.resultados;
   if (!Array.isArray(results) || results.length !== 2) throw new Error('O balancete deve possuir exatamente dois exercícios.');
   const years = results.map(result => ({ year: result?.exercicio, records: result?.registros, identification: parseExecutionIdentification(result?.relatorio?.siaficIdentificacao) }));
   if (!years.every(item => Number.isInteger(item.year) && Array.isArray(item.records)) || years[0].year === years[1].year) throw new Error('Os exercícios do balancete são inválidos.');

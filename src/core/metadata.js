@@ -18,3 +18,11 @@ export function parseMetadata(text) {
   }
   return { schemaVersion: VERSION, dashboard: { id: dashboard.id, version: dashboard.version } };
 }
+
+export function parseMetadataList(text) {
+  let value;
+  try { value = JSON.parse(text); } catch { throw new Error('Os metadados do relatório não são um JSON válido.'); }
+  const list = Array.isArray(value) ? value : [value];
+  if (!list.length) throw new Error('Os metadados do relatório não são compatíveis.');
+  return list.map(item => parseMetadata(JSON.stringify(item)));
+}
