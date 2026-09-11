@@ -45,6 +45,8 @@ body { margin: 0; min-height: 100vh; background: var(--surface); }
 .theme-toggle:hover, .theme-toggle:focus-visible { background: #eef1f7; outline: 2px solid var(--focus); outline-offset: 2px; }
 .brand img { display: block; width: 150px; height: auto; }
 .visualization-menu { display: flex; gap: .35rem; min-width: 0; overflow-x: auto; }
+.visualization-menu label { align-self: center; margin-right: .5rem; color: var(--muted); font-size: .78rem; font-weight: 700; }
+.visualization-menu select { min-width: 13rem; padding: .55rem 2rem .55rem .75rem; color: var(--brand-navy-deep); font: 600 .8rem/1.2 inherit; background: var(--surface-raised); border: 1px solid #aebbd2; border-radius: 5px; }
 .visualization-menu button { flex: 0 0 auto; padding: .55rem .8rem; color: var(--muted); font: 600 .8rem/1.2 inherit; white-space: nowrap; cursor: pointer; background: transparent; border: 1px solid transparent; border-radius: 5px; }
 .visualization-menu button:hover, .visualization-menu button:focus-visible { color: var(--brand-navy-deep); background: #eef1f7; outline: 2px solid var(--focus); outline-offset: 2px; }
 .visualization-menu button[aria-selected="true"] { color: #fff; background: var(--brand-navy); border-color: var(--brand-navy); }

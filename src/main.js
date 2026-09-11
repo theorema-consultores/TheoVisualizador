@@ -7,12 +7,15 @@ import { resolveDashboard } from './core/dashboard-registry.js';
 import { startDashboard } from './core/dashboard-runtime.js';
 import { renderError, renderProtocolPrompt } from './shared/shell.js';
 import { initializeTheme } from './shared/theme.js';
+import { renderReportNavigation } from './shared/report-navigation.js';
+import logoUrl from './assets/theorema-logo.png';
 
 document.documentElement.classList.add('js');
 initializeTheme({ document, storage: window.localStorage, prefersDark: window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false });
 
 const app = document.getElementById('app');
 const transferStore = createTransferStore();
+let navigation;
 const mount = ({ dashboard, bytes }) => startDashboard({
   id: dashboard.id,
   version: dashboard.version,
@@ -23,7 +26,11 @@ const mount = ({ dashboard, bytes }) => startDashboard({
   session: window.sessionStorage,
   transferStore,
   download: downloadResult,
-  container: app
+  container: app,
+  onVisualizations: ({ visualizations, index, select }) => {
+    navigation?.destroy();
+    navigation = renderReportNavigation(app, { visualizations, activeIndex: index, onSelect: select, storage: window.localStorage, logoUrl });
+  }
 });
 const queryProtocol = new URLSearchParams(window.location.search).get('protocolo');
 const sessionDashboardId = window.sessionStorage.getItem('report.dashboardId');
