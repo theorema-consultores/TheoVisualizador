@@ -55,7 +55,7 @@ body { margin: 0; min-height: 100vh; background: var(--surface); }
 .theme-toggle { width: 2.35rem; height: 2.35rem; color: var(--brand-navy-deep); font-size: 1.1rem; cursor: pointer; background: transparent; border: 1px solid #aebbd2; border-radius: 5px; }
 .theme-toggle:hover, .theme-toggle:focus-visible { background: #eef1f7; outline: 2px solid var(--focus); outline-offset: 2px; }
 .brand img { display: block; width: 150px; height: auto; }
-.visualization-menu { display: flex; gap: 1.25rem; align-self: stretch; min-width: 0; overflow-x: auto; border-bottom: 1px solid var(--line); }
+.visualization-menu { display: flex; gap: 1.25rem; align-self: stretch; min-width: 0; margin-bottom: -1px; overflow-x: auto; }
 .visualization-menu button { flex: 0 0 auto; align-self: stretch; padding: .65rem .15rem .5rem; color: var(--muted); font: 700 .8rem/1.2 inherit; white-space: nowrap; cursor: pointer; background: transparent; border: 0; border-bottom: 3px solid transparent; }
 .visualization-menu button:hover, .visualization-menu button:focus-visible { color: var(--brand-navy-deep); background: #eef1f7; outline: 2px solid var(--focus); outline-offset: -2px; }
 .visualization-menu button[aria-selected="true"] { color: var(--brand-navy-deep); border-bottom-color: var(--action); }
