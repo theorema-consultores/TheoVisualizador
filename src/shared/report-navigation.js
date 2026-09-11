@@ -19,18 +19,15 @@ export function renderReportNavigation(container, { visualizations, activeIndex,
   };
   updateThemeButton();
   themeButton.addEventListener('click', () => { toggleTheme({ document: doc, storage }); updateThemeButton(); });
-  if (visualizations.length <= 4) {
-    menu.setAttribute('role', 'tablist'); menu.setAttribute('aria-label', 'Visualizações do relatório');
-    visualizations.forEach((item, index) => {
-      const button = doc.createElement('button'); button.type = 'button'; button.role = 'tab'; button.textContent = labelFor(item, visualizations); button.setAttribute('aria-selected', String(index === activeIndex)); button.addEventListener('click', () => onSelect(index)); menu.append(button);
-    });
-  } else {
-    const label = doc.createElement('label'); label.htmlFor = 'visualizacao-select'; label.textContent = 'Visualização';
-    const select = doc.createElement('select'); select.id = 'visualizacao-select'; select.name = 'visualizacao'; select.setAttribute('aria-label', 'Visualização do relatório');
-    visualizations.forEach((item, index) => { const option = doc.createElement('option'); option.value = String(index); option.textContent = labelFor(item, visualizations); option.selected = index === activeIndex; select.append(option); });
-    select.addEventListener('change', () => onSelect(Number(select.value)));
-    menu.append(label, select);
-  }
+  menu.setAttribute('role', 'tablist'); menu.setAttribute('aria-label', 'Relatórios da visão');
+  visualizations.forEach((item, index) => {
+    const button = doc.createElement('button');
+    button.type = 'button'; button.role = 'tab'; button.textContent = labelFor(item, visualizations);
+    button.setAttribute('aria-selected', String(index === activeIndex));
+    button.tabIndex = index === activeIndex ? 0 : -1;
+    button.addEventListener('click', () => onSelect(index));
+    menu.append(button);
+  });
   container.before(nav);
   return { destroy() { nav.remove(); } };
 }
