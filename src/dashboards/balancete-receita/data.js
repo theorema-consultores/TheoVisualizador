@@ -24,8 +24,8 @@ function parseExecutionIdentification(value) {
   };
 }
 
-export async function loadBalancete(archive, { protocol = '', visualizationIndex = 0 } = {}) {
-  const files = archive.findByBasename('balancete-receita.json');
+export async function loadBalancete(archive, { protocol = '', visualizationIndex = 0, dataFile } = {}) {
+  const files = dataFile ? [dataFile] : archive.findByBasename('balancete-receita.json');
   if (!files.length) throw new Error('O ZIP não contém balancete-receita.json.');
   if (!files[visualizationIndex]) throw new Error('O ZIP não contém os dados desta visualização.');
   const results = archive.readJson(files[visualizationIndex])?.resultados;

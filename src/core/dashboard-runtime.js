@@ -17,5 +17,6 @@ export async function startDashboard({ id, version, dashboard, bytes: providedBy
   if ((selectedDashboard.id !== id || selectedDashboard.version !== version) && !dashboard) throw new Error('Este relatório pertence a outro dashboard.');
   onVisualizations?.({ count: metadata.length, index, select: next => startDashboard({ id: selectedDashboard.id, version: selectedDashboard.version, dashboard: selectedDashboard, load, render, bytes, session, transferStore: { take: async () => bytes }, download, container, visualizationIndex: next, onVisualizations }), visualizations: metadata.map(item => resolveDashboard(item)) });
   const context = metadata.length > 1 ? { protocol, visualizationIndex: index, visualizationCount: metadata.length } : { protocol };
-  return render(container, await load(archive, context));
+  const loadContext = metadata[index].arquivo ? { ...context, dataFile: metadata[index].arquivo } : context;
+  return render(container, await load(archive, loadContext));
 }

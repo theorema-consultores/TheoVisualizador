@@ -16,6 +16,27 @@ test('parses multiple visualizations from an array manifest', () => {
   assert.deepEqual(parseMetadataList(JSON.stringify([validMetadata, validMetadata])), [validMetadata, validMetadata]);
 });
 
+test('normalizes a vision manifest into report tabs with their data files', () => {
+  assert.deepEqual(parseMetadataList(JSON.stringify({
+    schemaVersion: '1.0.0',
+    visao: { id: 'visao-contabil', nome: 'Visão Contábil', relatorios: [
+      { id: 'balancete-receita', version: '1.0.0', arquivo: 'dados/balancete.json' }
+    ] }
+  })), [{ ...validMetadata, arquivo: 'dados/balancete.json' }]);
+});
+
+test('accepts the manifest returned by the supplied protocol', () => {
+  const manifest = {
+    schemaVersion: '1.0.0',
+    visao: {
+      id: 'visao-contabil',
+      nome: 'Visão Contábil',
+      relatorios: [{ id: 'balancete-receita', version: '1.0.0', arquivo: 'balancete-receita.json' }]
+    }
+  };
+  assert.deepEqual(parseMetadataList(JSON.stringify(manifest)), [{ ...validMetadata, arquivo: 'balancete-receita.json' }]);
+});
+
 test('rejects metadata with a data-file declaration', () => {
   assert.throws(
     () => parseMetadata(JSON.stringify({ ...validMetadata, files: {} })),
