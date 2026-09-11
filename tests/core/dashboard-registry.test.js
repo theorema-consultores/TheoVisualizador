@@ -6,6 +6,6 @@ const metadata = { schemaVersion: '1.0.0', dashboard: { id: 'balancete-receita',
 
 test('resolves a dashboard with a label and mount function', () => {
   const dashboard = resolveDashboard(metadata);
-  assert.equal(dashboard.label, 'B. Receita');
+  assert.equal(dashboard.label, 'Balancete Receita');
   assert.equal(typeof dashboard.mount, 'function');
 });

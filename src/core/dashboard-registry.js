@@ -2,7 +2,7 @@ import { mountBalancete } from '../dashboards/balancete-receita/index.js';
 import { loadBalancete } from '../dashboards/balancete-receita/data.js';
 
 const DASHBOARDS = [
-  { id: 'balancete-receita', label: 'B. Receita', version: '1.0.0', page: 'dashboards/balancete-receita/', load: loadBalancete, mount: mountBalancete }
+  { id: 'balancete-receita', label: 'Balancete Receita', version: '1.0.0', page: 'dashboards/balancete-receita/', load: loadBalancete, mount: mountBalancete }
 ];
 
 export function resolveDashboard(metadata) {

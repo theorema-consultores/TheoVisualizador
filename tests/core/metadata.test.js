@@ -47,7 +47,7 @@ test('rejects metadata with a data-file declaration', () => {
 test('maps a registered dashboard version to its physical page and mount contract', () => {
   const dashboard = resolveDashboard(validMetadata);
   assert.deepEqual({ id: dashboard.id, label: dashboard.label, version: dashboard.version, page: dashboard.page }, {
-    id: 'balancete-receita', label: 'B. Receita', version: '1.0.0', page: 'dashboards/balancete-receita/'
+    id: 'balancete-receita', label: 'Balancete Receita', version: '1.0.0', page: 'dashboards/balancete-receita/'
   });
   assert.equal(typeof dashboard.load, 'function');
   assert.equal(typeof dashboard.mount, 'function');
