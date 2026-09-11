@@ -7,6 +7,7 @@ import { renderBalancete } from './view.js';
 import { renderError } from '../../shared/shell.js';
 import logoUrl from '../../assets/theorema-logo.png';
 import { initializeTheme, toggleTheme } from '../../shared/theme.js';
+import { dashboardLabel } from '../../core/dashboard-registry.js';
 
 const app = document.getElementById('app');
 app.textContent = 'Carregando relatório…';
@@ -22,10 +23,15 @@ const updateThemeButton = theme => { themeButton.textContent = theme === 'dark' 
 updateThemeButton(document.documentElement.dataset.theme);
 themeButton.addEventListener('click', () => updateThemeButton(toggleTheme({ document, storage: window.localStorage })));
 startDashboard({ id: 'balancete-receita', version: '1.0.0', load: loadBalancete, render: renderBalancete, transferStore: createTransferStore(), download: downloadResult, container: app,
-  onVisualizations: ({ count, index, select }) => {
+  onVisualizations: ({ count, index, select, visualizations }) => {
     selector.replaceChildren();
+    const labels = visualizations.map(item => item.label ?? dashboardLabel(item.id));
+    const totals = labels.reduce((all, label) => ({ ...all, [label]: (all[label] ?? 0) + 1 }), {});
+    const seen = {};
     for (let item = 0; item < count; item += 1) {
-      const button = document.createElement('button'); button.type = 'button'; button.role = 'tab'; button.textContent = `Visualização ${item + 1}`; button.setAttribute('aria-selected', String(item === index)); button.addEventListener('click', () => select(item)); selector.append(button);
+      const label = labels[item];
+      seen[label] = (seen[label] ?? 0) + 1;
+      const button = document.createElement('button'); button.type = 'button'; button.role = 'tab'; button.textContent = totals[label] > 1 ? `${label} ${seen[label]}` : label; button.setAttribute('aria-selected', String(item === index)); button.addEventListener('click', () => select(item)); selector.append(button);
     }
   }
 })

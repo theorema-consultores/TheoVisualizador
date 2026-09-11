@@ -1,5 +1,5 @@
 const DASHBOARDS = [
-  { id: 'balancete-receita', version: '1.0.0', page: 'dashboards/balancete-receita/' }
+  { id: 'balancete-receita', label: 'B. Receita', version: '1.0.0', page: 'dashboards/balancete-receita/' }
 ];
 
 export function resolveDashboard(metadata) {
@@ -7,4 +7,8 @@ export function resolveDashboard(metadata) {
   if (found) return { ...found };
   const sameId = DASHBOARDS.some(entry => entry.id === metadata.dashboard.id);
   throw new Error(sameId ? 'Versão do dashboard não suportada.' : 'O dashboard solicitado não está registrado.');
+}
+
+export function dashboardLabel(id) {
+  return DASHBOARDS.find(entry => entry.id === id)?.label ?? id;
 }

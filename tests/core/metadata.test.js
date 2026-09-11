@@ -26,6 +26,7 @@ test('rejects metadata with a data-file declaration', () => {
 test('maps a registered dashboard version to its physical page', () => {
   assert.deepEqual(resolveDashboard(validMetadata), {
     id: 'balancete-receita',
+    label: 'B. Receita',
     version: '1.0.0',
     page: 'dashboards/balancete-receita/'
   });
