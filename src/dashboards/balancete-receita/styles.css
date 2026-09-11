@@ -181,6 +181,10 @@ body {
 .month-bar.current { background: var(--green); }
 .resource-theme .month-bar.current { background: var(--terracotta); }
 
+[data-theme="dark"] .balancete .hero { background: #111728; }
+[data-theme="dark"] .month-select, [data-theme="dark"] .search-input { color: var(--ink); background: var(--paper); }
+[data-theme="dark"] .bar-track, [data-theme="dark"] .details-row { background: #1b2234; }
+
 @media (max-width: 950px) {
   .execution-grid, .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

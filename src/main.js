@@ -4,8 +4,10 @@ import { downloadResult } from './core/download.js';
 import { resolveReport } from './core/resolver.js';
 import { createTransferStore } from './core/transfer-store.js';
 import { renderError, renderProtocolPrompt } from './shared/shell.js';
+import { initializeTheme } from './shared/theme.js';
 
 document.documentElement.classList.add('js');
+initializeTheme({ document, storage: window.localStorage, prefersDark: window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false });
 
 const app = document.getElementById('app');
 if (!new URLSearchParams(window.location.search).get('protocolo')) {
