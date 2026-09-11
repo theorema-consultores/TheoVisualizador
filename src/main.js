@@ -32,6 +32,9 @@ const mount = ({ dashboard, bytes }) => startDashboard({
     navigation?.destroy();
     navigation = renderReportNavigation(app, { visualizations, activeIndex: index, onSelect: select, storage: window.localStorage, logoUrl });
   }
+}).then(result => {
+  document.title = `${dashboard.label} · TheoView`;
+  return result;
 });
 const queryProtocol = new URLSearchParams(window.location.search).get('protocolo');
 const sessionDashboardId = window.sessionStorage.getItem('report.dashboardId');
