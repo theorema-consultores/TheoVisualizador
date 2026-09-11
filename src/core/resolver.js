@@ -13,6 +13,8 @@ export async function resolveReport({ search, session, download, openArchive, tr
   const dashboard = resolveDashboard(metadata[0]);
   const transferId = await transferStore.put(bytes);
   session.setItem('report.transferId', transferId);
-  navigate(dashboard.page);
-  return { ...dashboard, visualizationCount: metadata.length };
+  session.setItem('report.dashboardId', dashboard.id);
+  session.setItem('report.dashboardVersion', dashboard.version);
+  navigate('/');
+  return { dashboard, metadata, bytes, transferId, visualizationCount: metadata.length };
 }

@@ -1,0 +1,12 @@
+import './styles.css';
+import { createTransferStore } from '../../core/transfer-store.js';
+import { downloadResult } from '../../core/download.js';
+import { startDashboard } from '../../core/dashboard-runtime.js';
+import { loadBalancete } from './data.js';
+import { mountBalancete } from './index.js';
+import { renderError } from '../../shared/shell.js';
+
+const app = document.getElementById('app');
+app.textContent = 'Carregando relatório…';
+startDashboard({ id: 'balancete-receita', version: '1.0.0', load: loadBalancete, render: (container, model) => mountBalancete(container, { model }), transferStore: createTransferStore(), download: downloadResult, container: app })
+  .catch(error => renderError(app, error, { retry: () => window.location.reload() }));
