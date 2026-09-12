@@ -45,8 +45,9 @@ body { margin: 0; min-height: 100vh; background: var(--surface); }
 .report-shell p { color: var(--muted); }
 .protocol-form { display: grid; gap: .55rem; margin-top: 1.5rem; }
 .protocol-form label { color: var(--brand-navy-deep); font-size: .82rem; font-weight: 700; }
-.protocol-form input { min-height: 2.75rem; padding: .65rem .8rem; color: var(--text); font: inherit; border: 1px solid #b9c3d4; border-radius: 5px; }
-.protocol-form input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.protocol-form input, .protocol-form select { width: 100%; min-height: 2.75rem; padding: .65rem .8rem; color: var(--text); font: inherit; border: 1px solid #b9c3d4; border-radius: 5px; }
+.protocol-form select { background: var(--surface-raised); }
+.protocol-form input:focus-visible, .protocol-form select:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .protocol-form button { justify-self: start; min-height: 2.75rem; padding: .65rem 1rem; color: #fff; font: 700 .86rem inherit; cursor: pointer; background: var(--action); border: 0; border-radius: 5px; }
 .protocol-form button:hover, .protocol-form button:focus-visible { background: var(--action-dark); outline: 2px solid var(--focus); outline-offset: 2px; }
 .app-nav { position: sticky; top: 0; z-index: 10; display: grid; grid-template-columns: 170px 1fr auto; gap: 1.5rem; align-items: center; padding: .75rem max(2rem, calc((100vw - 72rem) / 2)) 0; background: rgb(255 255 255 / 96%); border-bottom: 1px solid var(--line); box-shadow: 0 2px 10px rgb(32 42 67 / 7%); backdrop-filter: blur(12px); }

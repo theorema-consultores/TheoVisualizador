@@ -11,6 +11,12 @@ test('uses consistent Betha-style header control sizing and UI font', () => {
   assert.match(styles, /\.support-link\s*\{[^}]*font:\s*700\s+\.8rem\/1\.2\s+var\(--font-ui\)/s);
 });
 
+test('styles the recent protocol selector like the protocol field', () => {
+  const styles = readFileSync(new URL('../../src/styles.css', import.meta.url), 'utf8');
+  assert.match(styles, /\.protocol-form input, \.protocol-form select\s*\{[^}]*min-height:\s*2\.75rem/s);
+  assert.match(styles, /\.protocol-form input, \.protocol-form select\s*\{[^}]*font:\s*inherit/s);
+});
+
 const visualizations = Array.from({ length: 5 }, (_, index) => ({ id: 'balancete-receita', label: 'Balancete Receita', index }));
 
 test('renders Betha-style horizontal tabs for any number of visualizations', () => {
