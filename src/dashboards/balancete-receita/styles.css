@@ -108,8 +108,12 @@ body {
 .kpi-card .value.muted { color: var(--muted); }
 .kpi-card .subtext { color: var(--muted); font-size: .75rem; }
 .month-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.month-select { width: 110px; min-height: 2.75rem; padding: .65rem .8rem; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 5px; font: inherit; }
+.month-dropdown { position: relative; }
+.month-select { width: 110px; min-height: 2rem; padding: .35rem .6rem; color: var(--ink); text-align: left; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; font: inherit; cursor: pointer; }
 .month-select:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.month-options { position: absolute; top: calc(100% + 4px); right: 0; z-index: 3; width: 150px; max-height: 240px; overflow-y: auto; padding: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 6px 16px rgb(32 42 67 / 18%); }
+.month-option { display: block; width: 100%; padding: 7px 8px; color: var(--ink); text-align: left; background: transparent; border: 0; font: inherit; cursor: pointer; }
+.month-option:hover, .month-option:focus-visible { color: var(--brand-navy-deep); background: var(--brand-brown-soft); outline: none; }
 
 .tabs-header {
   display: flex;

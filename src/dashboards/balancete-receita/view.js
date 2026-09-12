@@ -143,20 +143,30 @@ export function renderBalancete(container, model) {
   const monthCard = element(doc, 'article', '', 'kpi-card');
   const monthHeader = element(doc, 'div', '', 'label month-heading');
   monthHeader.append(element(doc, 'span', 'Mês de referência'));
-  const monthSelect = doc.createElement('select');
+  const monthDropdown = element(doc, 'div', '', 'month-dropdown');
+  const monthSelect = doc.createElement('button');
+  monthSelect.type = 'button';
   monthSelect.className = 'month-select';
+  monthSelect.setAttribute('aria-haspopup', 'listbox');
+  monthSelect.setAttribute('aria-expanded', 'false');
   monthSelect.setAttribute('aria-label', 'Mês de referência');
+  const monthList = element(doc, 'div', '', 'month-options');
+  monthList.setAttribute('role', 'listbox'); monthList.hidden = true;
   MONTHS.forEach((month, index) => {
-    const option = element(doc, 'option', month);
-    option.value = String(index);
-    option.selected = index === new Date().getMonth();
-    monthSelect.append(option);
+    const option = element(doc, 'button', month, 'month-option');
+    option.type = 'button'; option.dataset.value = String(index); option.setAttribute('role', 'option');
+    option.addEventListener('click', () => { monthSelect.textContent = month; monthSelect.dataset.value = String(index); monthList.hidden = true; monthSelect.setAttribute('aria-expanded', 'false'); updateMonth(); });
+    monthList.append(option);
   });
-  monthHeader.append(monthSelect);
+  const initialMonth = new Date().getMonth();
+  monthSelect.textContent = MONTHS[initialMonth]; monthSelect.dataset.value = String(initialMonth);
+  monthSelect.addEventListener('click', () => { monthList.hidden = !monthList.hidden; monthSelect.setAttribute('aria-expanded', String(!monthList.hidden)); });
+  monthSelect.addEventListener('keydown', event => { if (event.key === 'Escape') { monthList.hidden = true; monthSelect.setAttribute('aria-expanded', 'false'); } });
+  monthDropdown.append(monthSelect, monthList); monthHeader.append(monthDropdown);
   const monthValue = element(doc, 'strong', '', 'value');
   const monthDetail = element(doc, 'div', '', 'subtext');
   const updateMonth = () => {
-    const index = Number(monthSelect.value);
+    const index = Number(monthSelect.dataset.value);
     const current = model.current.reduce((sum, record) => sum + record.months[index], 0);
     const previous = model.previous.reduce((sum, record) => sum + record.months[index], 0);
     monthValue.textContent = money(current);
