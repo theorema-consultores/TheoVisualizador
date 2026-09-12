@@ -16,7 +16,7 @@
 - Usar Open Sans como fonte de interface e escala consistente de espaçamento.
 - Usar azul para ações, cinzas para estrutura e cores semânticas para estados.
 - Manter tema claro/escuro, suporte, logo, favicon e labels amigáveis.
-- Não adicionar dependências; usar DOM nativo e `<select>` para dropdown.
+- Não adicionar dependências; usar DOM nativo e dropdowns acessíveis no padrão Betha.
 - Preservar páginas físicas no build apenas como compatibilidade, sem usá-las no fluxo novo.
 
 ---

@@ -26,12 +26,13 @@ export function renderProtocolPrompt(container, { navigate = url => container.ow
   const recent = JSON.parse(storage.getItem('report.recentProtocols') || '[]');
   if (recent.length) {
     const recentLabel = doc.createElement('label'); recentLabel.htmlFor = 'recent-protocol'; recentLabel.textContent = 'Protocolos recentes';
-    const select = doc.createElement('select'); select.id = 'recent-protocol'; select.name = 'recent-protocol';
-    const addOption = (label, value) => { const option = doc.createElement('option'); option.textContent = label; option.value = value; select.append(option); };
-    addOption('Selecione um protocolo', '');
-    recent.forEach(protocol => addOption(protocol, protocol));
-    select.addEventListener('change', () => { if (select.value) input.value = select.value; });
-    form.append(recentLabel, select);
+    const dropdown = doc.createElement('div'); dropdown.className = 'protocol-dropdown dropdown';
+    const toggle = doc.createElement('button'); toggle.type = 'button'; toggle.id = 'recent-protocol'; toggle.className = 'dropdown-toggle'; toggle.setAttribute('aria-haspopup', 'listbox'); toggle.setAttribute('aria-expanded', 'false'); toggle.textContent = 'Selecione um protocolo';
+    const menu = doc.createElement('div'); menu.className = 'dropdown-menu'; menu.setAttribute('role', 'listbox'); menu.hidden = true;
+    recent.forEach(protocol => { const option = doc.createElement('button'); option.type = 'button'; option.className = 'dropdown-item'; option.setAttribute('role', 'option'); option.textContent = protocol; option.addEventListener('click', () => { input.value = protocol; toggle.textContent = protocol; menu.hidden = true; toggle.setAttribute('aria-expanded', 'false'); }); menu.append(option); });
+    toggle.addEventListener('click', () => { menu.hidden = !menu.hidden; toggle.setAttribute('aria-expanded', String(!menu.hidden)); });
+    toggle.addEventListener('keydown', event => { if (event.key === 'Escape') { menu.hidden = true; toggle.setAttribute('aria-expanded', 'false'); } });
+    dropdown.append(toggle, menu); form.append(recentLabel, dropdown);
   }
   const button = doc.createElement('button'); button.type = 'submit'; button.textContent = 'Abrir relatório';
   form.append(label, input, button);

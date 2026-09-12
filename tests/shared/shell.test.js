@@ -23,10 +23,11 @@ test('renders recent protocols and uses the selected one', () => {
   ]));
   let target;
   renderProtocolPrompt(container, { navigate: url => { target = url; } });
-  const recent = container.querySelector('select[name="recent-protocol"]');
-  assert.equal(recent.options.length, 3);
-  recent.value = recent.options[1].value;
-  recent.dispatchEvent(new dom.window.Event('change'));
+  const recent = container.querySelector('.protocol-dropdown');
+  assert.equal(recent.classList.contains('dropdown'), true);
+  assert.equal(recent.querySelectorAll('[role="option"]').length, 2);
+  recent.querySelector('.dropdown-toggle').click();
+  recent.querySelector('[role="option"]').click();
   container.querySelector('form').requestSubmit();
   assert.equal(target, '?protocolo=11111111-1111-4111-8111-111111111111');
 });

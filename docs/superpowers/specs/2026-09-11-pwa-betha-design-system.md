@@ -40,7 +40,7 @@ O runtime continuará recebendo dependências por injeção nos testes, mas deix
 O nav global terá logo, seletor de visualizações, tema e suporte. A seleção terá duas apresentações:
 
 - até 4 visualizações: abas horizontais com `role="tablist"`, `role="tab"`, `aria-selected` e foco visível;
-- mais de 4: dropdown nativo estilizado, com `label` acessível, camada acima do conteúdo e fechamento natural pelo navegador.
+- mais de 4: dropdown no padrão Betha, com `label` acessível, botão toggle, menu de itens, camada acima do conteúdo e estados de foco/abertura.
 
 O texto será obtido pelo mapa de labels do registro, como `balancete-receita: B. Receita`. IDs sem label usarão fallback legível. Visualizações repetidas terão sufixo numérico apenas quando necessário.
 
