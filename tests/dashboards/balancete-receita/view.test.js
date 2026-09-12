@@ -8,6 +8,7 @@ test('styles the month selector with the shared UI control pattern', () => {
   const styles = readFileSync(new URL('../../../src/dashboards/balancete-receita/styles.css', import.meta.url), 'utf8');
   assert.match(styles, /\.month-select\s*\{[^}]*min-height:\s*2rem/s);
   assert.match(styles, /\.month-select\s*\{[^}]*font:\s*inherit/s);
+  assert.match(styles, /\.month-select::after\s*\{[^}]*content:\s*"⌄"/s);
 });
 
 const row = { receita: '1.1', descricao: '<script>alert(1)</script>', recurso: '1.500.01.02.03.04', origem: '01', aplicacao: '02', desdobramento: '03', detalhamento: '04', total: 120, months: Array(12).fill(10), count: 1 };
