@@ -6,6 +6,8 @@ import { renderReportNavigation } from '../../src/shared/report-navigation.js';
 
 test('uses consistent Betha-style header control sizing and UI font', () => {
   const styles = readFileSync(new URL('../../src/styles.css', import.meta.url), 'utf8');
+  assert.match(styles, /\.app-nav\s*\{[^}]*min-height:\s*4rem/s);
+  assert.match(styles, /\.app-nav\s*\{[^}]*padding:\s*0\s+max\(/s);
   assert.match(styles, /\.theme-toggle\s*\{[^}]*height:\s*2\.5rem/s);
   assert.match(styles, /\.support-link\s*\{[^}]*height:\s*2\.5rem/s);
   assert.match(styles, /\.support-link\s*\{[^}]*font:\s*700\s+\.8rem\/1\.2\s+var\(--font-ui\)/s);
