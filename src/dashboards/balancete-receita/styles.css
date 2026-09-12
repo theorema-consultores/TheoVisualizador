@@ -108,7 +108,8 @@ body {
 .kpi-card .value.muted { color: var(--muted); }
 .kpi-card .subtext { color: var(--muted); font-size: .75rem; }
 .month-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.month-select { max-width: 110px; padding: 4px 6px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; }
+.month-select { width: 110px; min-height: 2.75rem; padding: .65rem .8rem; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 5px; font: inherit; }
+.month-select:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 .tabs-header {
   display: flex;
