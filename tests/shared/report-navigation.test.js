@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { renderReportNavigation } from '../../src/shared/report-navigation.js';
+
+test('uses consistent Betha-style header control sizing and UI font', () => {
+  const styles = readFileSync(new URL('../../src/styles.css', import.meta.url), 'utf8');
+  assert.match(styles, /\.theme-toggle\s*\{[^}]*height:\s*2\.5rem/s);
+  assert.match(styles, /\.support-link\s*\{[^}]*height:\s*2\.5rem/s);
+  assert.match(styles, /\.support-link\s*\{[^}]*font:\s*700\s+\.8rem\/1\.2\s+var\(--font-ui\)/s);
+});
 
 const visualizations = Array.from({ length: 5 }, (_, index) => ({ id: 'balancete-receita', label: 'Balancete Receita', index }));
 
