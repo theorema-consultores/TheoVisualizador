@@ -9,6 +9,7 @@ test('renders Betha-style horizontal tabs for any number of visualizations', () 
   const dom = new JSDOM('<main id="app"></main>', { url: 'https://example.test/' });
   const container = dom.window.document.querySelector('main');
   const tabs = renderReportNavigation(container, { visualizations: visualizations.slice(0, 4), activeIndex: 0, onSelect() {}, storage: dom.window.localStorage });
+  assert.equal(container.previousElementSibling.querySelector('.brand').getAttribute('href'), './?home=1');
   assert.ok(container.previousElementSibling.querySelector('[role="tablist"]'));
   tabs.destroy();
   renderReportNavigation(container, { visualizations, activeIndex: 0, onSelect() {}, storage: dom.window.localStorage });

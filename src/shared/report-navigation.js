@@ -9,7 +9,7 @@ export function renderReportNavigation(container, { visualizations, activeIndex,
   const doc = container.ownerDocument;
   const nav = doc.createElement('header');
   nav.className = 'app-nav';
-  nav.innerHTML = `<a class="brand" href="./" aria-label="Theorema Visualizador"><img src="${logoUrl}" alt="Theorema Consultores" /></a><div class="visualization-menu"></div><div class="nav-actions"><button class="theme-toggle" type="button"></button><a class="support-link" href="https://theorema.movidesk.com/" target="_blank" rel="noreferrer">Solicitar suporte<span class="material-symbols-rounded" aria-hidden="true">open_in_new</span></a></div>`;
+  nav.innerHTML = `<a class="brand" href="./?home=1" aria-label="Theorema Visualizador"><img src="${logoUrl}" alt="Theorema Consultores" /></a><div class="visualization-menu"></div><div class="nav-actions"><button class="theme-toggle" type="button"></button><a class="support-link" href="https://theorema.movidesk.com/" target="_blank" rel="noreferrer">Solicitar suporte<span class="material-symbols-rounded" aria-hidden="true">open_in_new</span></a></div>`;
   const menu = nav.querySelector('.visualization-menu');
   const themeButton = nav.querySelector('.theme-toggle');
   const updateThemeButton = () => {

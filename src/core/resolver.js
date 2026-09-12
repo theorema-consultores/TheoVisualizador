@@ -2,9 +2,13 @@ import { parseMetadataList } from './metadata.js';
 import { normalizeProtocol } from './protocol.js';
 import { resolveDashboard } from './dashboard-registry.js';
 
-export async function resolveReport({ search, session, download, openArchive, transferStore, navigate }) {
+export async function resolveReport({ search, session, download, openArchive, transferStore, navigate, storage }) {
   const rawProtocol = new URLSearchParams(search).get('protocolo');
   const protocol = normalizeProtocol(rawProtocol);
+  if (storage) {
+    const recent = JSON.parse(storage.getItem('report.recentProtocols') || '[]');
+    storage.setItem('report.recentProtocols', JSON.stringify([protocol, ...recent.filter(item => item !== protocol)].slice(0, 5)));
+  }
   session.setItem('report.protocol', protocol);
   await transferStore.cleanup();
   const bytes = await download(protocol);

@@ -13,8 +13,9 @@ export function renderShell(container, { title = 'Carregando relatório…', det
   return { content, setStatus(nextTitle, nextDetail = '') { heading.textContent = nextTitle; message.textContent = nextDetail; } };
 }
 
-export function renderProtocolPrompt(container, { navigate = url => window.location.assign(url) } = {}) {
+export function renderProtocolPrompt(container, { navigate = url => container.ownerDocument.defaultView.location.assign(url), storage } = {}) {
   const doc = container.ownerDocument;
+  storage ??= doc.defaultView.localStorage;
   container.replaceChildren();
   const section = doc.createElement('section'); section.className = 'report-shell protocol-prompt';
   const heading = doc.createElement('h1'); heading.textContent = 'Informe um protocolo para abrir o relatório';
@@ -22,6 +23,16 @@ export function renderProtocolPrompt(container, { navigate = url => window.locat
   const form = doc.createElement('form'); form.className = 'protocol-form';
   const label = doc.createElement('label'); label.htmlFor = 'protocol-input'; label.textContent = 'Protocolo';
   const input = doc.createElement('input'); input.id = 'protocol-input'; input.name = 'protocolo'; input.type = 'text'; input.required = true; input.placeholder = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'; input.autocomplete = 'off';
+  const recent = JSON.parse(storage.getItem('report.recentProtocols') || '[]');
+  if (recent.length) {
+    const recentLabel = doc.createElement('label'); recentLabel.htmlFor = 'recent-protocol'; recentLabel.textContent = 'Protocolos recentes';
+    const select = doc.createElement('select'); select.id = 'recent-protocol'; select.name = 'recent-protocol';
+    const addOption = (label, value) => { const option = doc.createElement('option'); option.textContent = label; option.value = value; select.append(option); };
+    addOption('Selecione um protocolo', '');
+    recent.forEach(protocol => addOption(protocol, protocol));
+    select.addEventListener('change', () => { if (select.value) input.value = select.value; });
+    form.append(recentLabel, select);
+  }
   const button = doc.createElement('button'); button.type = 'submit'; button.textContent = 'Abrir relatório';
   form.append(label, input, button);
   form.addEventListener('submit', event => { event.preventDefault(); navigate(`?protocolo=${encodeURIComponent(input.value.trim())}`); });

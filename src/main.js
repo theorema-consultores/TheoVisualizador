@@ -37,10 +37,11 @@ const mount = ({ dashboard, bytes }) => startDashboard({
   return result;
 });
 const queryProtocol = new URLSearchParams(window.location.search).get('protocolo');
+const homeRequested = new URLSearchParams(window.location.search).get('home') === '1';
 const sessionDashboardId = window.sessionStorage.getItem('report.dashboardId');
 const sessionDashboardVersion = window.sessionStorage.getItem('report.dashboardVersion');
-if (!queryProtocol && (!sessionDashboardId || !sessionDashboardVersion)) {
-  renderProtocolPrompt(app);
+if (!queryProtocol && (homeRequested || !sessionDashboardId || !sessionDashboardVersion)) {
+  renderProtocolPrompt(app, { storage: window.localStorage });
 } else if (queryProtocol) {
   resolveReport({
     search: window.location.search,
@@ -48,6 +49,7 @@ if (!queryProtocol && (!sessionDashboardId || !sessionDashboardVersion)) {
     download: downloadResult,
     openArchive,
     transferStore,
+    storage: window.localStorage,
     navigate: url => window.history.replaceState({}, '', url)
   }).then(result => mount({ dashboard: result.dashboard, bytes: result.bytes })).catch(error => {
     renderError(app, error, { retry: () => window.location.reload() });
