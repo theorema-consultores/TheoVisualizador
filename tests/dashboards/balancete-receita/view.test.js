@@ -8,7 +8,7 @@ test('styles the month selector with the shared UI control pattern', () => {
   const styles = readFileSync(new URL('../../../src/dashboards/balancete-receita/styles.css', import.meta.url), 'utf8');
   assert.match(styles, /\.month-select\s*\{[^}]*min-height:\s*2rem/s);
   assert.match(styles, /\.month-select\s*\{[^}]*font:\s*inherit/s);
-  assert.match(styles, /\.month-select::after\s*\{[^}]*content:\s*"⌄"/s);
+  assert.match(styles, /\.month-icon\s*\{[^}]*font-size:\s*1\.1rem/s);
 });
 
 const row = { receita: '1.1', descricao: '<script>alert(1)</script>', recurso: '1.500.01.02.03.04', origem: '01', aplicacao: '02', desdobramento: '03', detalhamento: '04', total: 120, months: Array(12).fill(10), count: 1 };
@@ -63,9 +63,12 @@ test('changes the month from the styled dropdown list', () => {
   const container = dom.window.document.getElementById('app');
   renderBalancete(container, model);
   const dropdown = container.querySelector('.month-dropdown');
+  assert.ok(dropdown.classList.contains('dropdown'));
+  assert.ok(dropdown.querySelector('.dropdown-toggle').getAttribute('aria-haspopup'));
+  assert.equal(dropdown.querySelectorAll('.dropdown-item').length, 12);
   dropdown.querySelector('button').click();
   dropdown.querySelector('[role="option"][data-value="0"]').click();
-  assert.equal(dropdown.querySelector('button').textContent, 'Janeiro');
+  assert.equal(dropdown.querySelector('.month-label').textContent, 'Janeiro');
   assert.equal(dropdown.querySelector('[role="listbox"]').hidden, true);
 });
 
