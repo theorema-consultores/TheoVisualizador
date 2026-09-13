@@ -16,7 +16,9 @@ class FakeNotyf {
 test('uses the shared Betha visual tokens for the notification action', () => {
   const styles = readFileSync(new URL('../../src/styles.css', import.meta.url), 'utf8');
   assert.match(styles, /\.license-notification\s*\{[^}]*font-family:\s*var\(--font-ui\)/s);
-  assert.match(styles, /\.license-notification__support\s*\{[^}]*background:\s*var\(--action\)/s);
+  assert.match(styles, /\.license-notification \.notyf__dismiss\s*\{[^}]*top:\s*\.5rem[^}]*right:\s*\.5rem/s);
+  assert.match(styles, /\.license-notification__actions\s*\{[^}]*justify-content:\s*flex-end/s);
+  assert.match(styles, /\.license-notification__support\s*\{[^}]*background:\s*#2e7d32/s);
 });
 
 function environment({ focused = true } = {}) {
@@ -50,6 +52,9 @@ test('renders missing licenses with a support action', () => {
   assert.doesNotMatch(notyf.openOptions.message, /</);
   assert.match(notyf.openOptions.message, /Relatório Caixa/);
   assert.match(notyf.openOptions.message, /Relatório Saúde/);
+  assert.match(message.innerHTML, /license-notification__title/);
+  assert.match(message.innerHTML, /license-notification__text/);
+  assert.match(message.innerHTML, /license-notification__actions/);
   assert.match(message.innerHTML, /href="https:\/\/support\.example\.test\//);
   assert.match(message.innerHTML, />Acionar suporte</);
   assert.equal(toast.attributes.role, 'status');

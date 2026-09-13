@@ -19,8 +19,8 @@ export function notifyMissingLicenses({ licenses = [], document: doc = globalThi
     types: [{ type: 'license', className: 'license-notification', background: 'var(--brand-navy-deep)', icon: false }]
   });
   const list = missing.map(item => `<li>${escapeHtml(item)}</li>`).join('');
-  const visualMessage = `<div class="license-notification__content"><strong>Alguns relatórios foram executados, porém você não possui licença para os seguintes relatórios:</strong><ul>${list}</ul><a class="license-notification__support" href="${escapeHtml(supportUrl)}" target="_blank" rel="noreferrer">Acionar suporte</a></div>`;
-  const spokenMessage = `Alguns relatórios foram executados, porém você não possui licença para os seguintes relatórios: ${missing.join(', ')}. Acionar suporte.`;
+  const visualMessage = `<div class="license-notification__content"><strong class="license-notification__title">Alguns relatórios foram executados</strong><p class="license-notification__text">Porém, você não possui licença para os seguintes relatórios:</p><ul>${list}</ul><div class="license-notification__actions"><a class="license-notification__support" href="${escapeHtml(supportUrl)}" target="_blank" rel="noreferrer">Acionar suporte</a></div></div>`;
+  const spokenMessage = `Alguns relatórios foram executados. Porém, você não possui licença para os seguintes relatórios: ${missing.join(', ')}. Acionar suporte.`;
   const notification = notyf.open({
     type: 'license',
     message: spokenMessage
