@@ -82,3 +82,23 @@ test('counts the ten-second duration only while the window is focused', () => {
   nextTimer.callback();
   assert.equal(instance.dismissed, instance.notification);
 });
+
+test('binds browser timers to the window that owns them', () => {
+  const env = environment();
+  const originalSetTimeout = globalThis.setTimeout;
+  const originalClearTimeout = globalThis.clearTimeout;
+  const browserSetTimeout = function () {
+    if (this !== env.view) throw new TypeError('Illegal invocation');
+    return {};
+  };
+  env.view.setTimeout = browserSetTimeout;
+  env.view.clearTimeout = () => {};
+  globalThis.setTimeout = browserSetTimeout;
+  globalThis.clearTimeout = env.view.clearTimeout;
+  try {
+    assert.doesNotThrow(() => notifyMissingLicenses({ document: env.doc, window: env.view, NotyfClass: FakeNotyf, licenses: ['Relatório Caixa'] }));
+  } finally {
+    globalThis.setTimeout = originalSetTimeout;
+    globalThis.clearTimeout = originalClearTimeout;
+  }
+});

@@ -7,7 +7,7 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 }
 
-export function notifyMissingLicenses({ licenses = [], document: doc = globalThis.document, window: view = globalThis, NotyfClass = Notyf, supportUrl = SUPPORT_URL, clock = { now: Date.now, setTimeout, clearTimeout } } = {}) {
+export function notifyMissingLicenses({ licenses = [], document: doc = globalThis.document, window: view = globalThis, NotyfClass = Notyf, supportUrl = SUPPORT_URL, clock = { now: Date.now, setTimeout: view.setTimeout.bind(view), clearTimeout: view.clearTimeout.bind(view) } } = {}) {
   const missing = [...new Set(licenses.filter(item => typeof item === 'string').map(item => item.trim()).filter(Boolean))];
   if (!missing.length) return null;
 
