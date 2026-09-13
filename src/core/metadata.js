@@ -20,7 +20,9 @@ export function parseMetadata(text) {
 }
 
 function parseView(value) {
-  if (!value || Object.keys(value).sort().join(',') !== 'id,nome,relatorios' || !ID_PATTERN.test(value.id) || typeof value.nome !== 'string' || !Array.isArray(value.relatorios) || !value.relatorios.length) {
+  const keys = Object.keys(value ?? {}).sort().join(',');
+  const hasValidKeys = keys === 'id,nome,relatorios' || keys === 'id,nome,relatorios,temasSemLicenca';
+  if (!value || !hasValidKeys || !ID_PATTERN.test(value.id) || typeof value.nome !== 'string' || !Array.isArray(value.relatorios) || !value.relatorios.length || (value.temasSemLicenca !== undefined && !Array.isArray(value.temasSemLicenca))) {
     throw new Error('Os metadados da visão não são compatíveis.');
   }
   return value.relatorios.map(report => {
@@ -31,13 +33,20 @@ function parseView(value) {
 }
 
 export function parseMetadataList(text) {
+  return parseVisualizationMetadata(text).metadata;
+}
+
+export function parseVisualizationMetadata(text) {
   let value;
   try { value = JSON.parse(text); } catch { throw new Error('Os metadados do relatório não são um JSON válido.'); }
   if (value?.visao) {
     if (value.schemaVersion !== VERSION) throw new Error('Os metadados da visão não são compatíveis.');
-    return parseView(value.visao);
+    return {
+      metadata: parseView(value.visao),
+      missingLicenses: (value.visao.temasSemLicenca ?? []).filter(item => typeof item === 'string').map(item => item.trim()).filter(Boolean)
+    };
   }
   const list = Array.isArray(value) ? value : [value];
   if (!list.length) throw new Error('Os metadados do relatório não são compatíveis.');
-  return list.map(item => parseMetadata(JSON.stringify(item)));
+  return { metadata: list.map(item => parseMetadata(JSON.stringify(item))), missingLicenses: [] };
 }

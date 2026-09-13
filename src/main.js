@@ -1,5 +1,6 @@
 import './styles.css';
 import './dashboards/balancete-receita/styles.css';
+import 'notyf/notyf.min.css';
 import { openArchive } from './core/archive.js';
 import { downloadResult } from './core/download.js';
 import { resolveReport } from './core/resolver.js';
@@ -9,6 +10,7 @@ import { startDashboard } from './core/dashboard-runtime.js';
 import { renderError, renderProtocolPrompt } from './shared/shell.js';
 import { initializeTheme } from './shared/theme.js';
 import { renderReportNavigation } from './shared/report-navigation.js';
+import { notifyMissingLicenses } from './shared/license-notification.js';
 import logoUrl from './assets/theorema-logo.png';
 
 document.documentElement.classList.add('js');
@@ -50,7 +52,8 @@ if (!queryProtocol && (homeRequested || !sessionDashboardId || !sessionDashboard
     openArchive,
     transferStore,
     storage: window.localStorage,
-    navigate: url => window.history.replaceState({}, '', url)
+    navigate: url => window.history.replaceState({}, '', url),
+    onMissingLicenses: licenses => notifyMissingLicenses({ licenses })
   }).then(result => mount({ dashboard: result.dashboard, bytes: result.bytes })).catch(error => {
     renderError(app, error, { retry: () => window.location.reload() });
   });

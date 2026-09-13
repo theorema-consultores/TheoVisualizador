@@ -22,3 +22,26 @@ test('stores a ZIP and navigates to the root shell without protocol in the targe
   assert.equal(values.get('report.dashboardId'), 'balancete-receita');
   assert.equal(target, '/');
 });
+
+test('returns missing licenses from the executed visualization manifest', async () => {
+  let notified;
+  const result = await resolveReport({
+    search: `?protocolo=${protocol}`,
+    session: { setItem() {} },
+    download: async () => new Uint8Array([1]),
+    openArchive: () => ({ readText: () => JSON.stringify({
+      schemaVersion: '1.0.0',
+      visao: {
+        id: 'visao-contabil',
+        nome: 'Visão Contábil',
+        temasSemLicenca: ['Relatório Caixa'],
+        relatorios: [{ id: 'balancete-receita', version: '1.0.0', arquivo: 'balancete-receita.json' }]
+      }
+    }) }),
+    transferStore: { cleanup: async () => {}, put: async () => 'transfer-id' },
+    navigate() {},
+    onMissingLicenses: value => { notified = value; }
+  });
+  assert.deepEqual(result.missingLicenses, ['Relatório Caixa']);
+  assert.deepEqual(notified, ['Relatório Caixa']);
+});

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseMetadata, parseMetadataList } from '../../src/core/metadata.js';
+import { parseMetadata, parseMetadataList, parseVisualizationMetadata } from '../../src/core/metadata.js';
 import { resolveDashboard } from '../../src/core/dashboard-registry.js';
 
 const validMetadata = {
@@ -35,6 +35,22 @@ test('accepts the manifest returned by the supplied protocol', () => {
     }
   };
   assert.deepEqual(parseMetadataList(JSON.stringify(manifest)), [{ ...validMetadata, arquivo: 'balancete-receita.json' }]);
+});
+
+test('accepts themes without a license in a vision manifest', () => {
+  const manifest = {
+    schemaVersion: '1.0.0',
+    visao: {
+      id: 'visao-contabil',
+      nome: 'Visão Contábil',
+      temasSemLicenca: ['tema-caixa'],
+      relatorios: [{ id: 'balancete-receita', version: '1.0.0', arquivo: 'balancete-receita.json' }]
+    }
+  };
+  assert.deepEqual(parseVisualizationMetadata(JSON.stringify(manifest)), {
+    metadata: [{ ...validMetadata, arquivo: 'balancete-receita.json' }],
+    missingLicenses: ['tema-caixa']
+  });
 });
 
 test('rejects metadata with a data-file declaration', () => {

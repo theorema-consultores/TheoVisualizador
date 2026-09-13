@@ -70,6 +70,12 @@ body { margin: 0; min-height: 100vh; background: var(--surface); }
 .visualization-menu button[aria-selected="true"] { color: var(--brand-navy-deep); border-bottom-color: var(--action); }
 .support-link { display: inline-flex; height: 2.5rem; box-sizing: border-box; gap: .4rem; align-items: center; padding: 0 .8rem; color: var(--brand-navy-deep); font: 700 .8rem/1.2 var(--font-ui); white-space: nowrap; text-decoration: none; border: 1px solid #aebbd2; border-radius: 5px; }
 .support-link:hover, .support-link:focus-visible { color: #fff; background: var(--brand-navy); outline: 2px solid var(--focus); outline-offset: 2px; }
+.license-notification { max-width: min(380px, calc(100vw - 2rem)); color: var(--text); font-family: var(--font-ui); background: var(--surface-raised) !important; border: 1px solid var(--line); border-left: 4px solid var(--action); border-radius: 6px; }
+.license-notification .notyf__message { line-height: 1.4; }
+.license-notification__content strong { display: block; margin-bottom: .5rem; font-weight: 700; }
+.license-notification__content ul { margin: 0 0 .8rem; padding-left: 1.2rem; }
+.license-notification__support { display: inline-flex; min-height: 2.25rem; align-items: center; padding: .5rem .8rem; color: #fff; font: 700 .8rem/1.2 var(--font-ui); text-decoration: none; background: var(--action); border-radius: 4px; }
+.license-notification__support:hover, .license-notification__support:focus-visible { color: #fff; background: var(--action-dark); outline: 2px solid var(--focus); outline-offset: 2px; }
 [data-theme="dark"] .app-nav { background: rgb(23 28 43 / 96%); box-shadow: 0 2px 10px rgb(0 0 0 / 18%); }
 [data-theme="dark"] .brand img { filter: brightness(1.15) contrast(.9); }
 [data-theme="dark"] .theme-toggle:hover, [data-theme="dark"] .theme-toggle:focus-visible, [data-theme="dark"] .visualization-menu button:hover, [data-theme="dark"] .visualization-menu button:focus-visible { background: #303b55; }

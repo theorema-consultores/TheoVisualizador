@@ -21,6 +21,7 @@ def protocolo = Execucao.atual.protocolo
 // Visão: objeto simples com closures para registrar relatórios e empacotá-los.
 def visao = [
     relatorios: [],
+    temasSemLicenca: [],
     fonteExiste: { String fonte ->
         def prefixo = "theo_view."
         if (!fonte?.startsWith(prefixo) || fonte.size() == prefixo.size()) return false
@@ -40,7 +41,7 @@ def visao = [
     empacotar: {
         if (!visao.relatorios) throw new IllegalStateException("A visão deve possuir pelo menos um relatório.")
         def manifesto = Arquivo.novo("visualizacao.json", "json")
-        manifesto.escreverObjeto([schemaVersion: "1.0.0", visao: [id: "visao-contabil", nome: "Visão Contábil", relatorios: visao.relatorios.collect { [id: it.id, version: it.version, arquivo: it.arquivo] }]])
+        manifesto.escreverObjeto([schemaVersion: "1.0.0", visao: [id: "visao-contabil", nome: "Visão Contábil", temasSemLicenca: visao.temasSemLicenca, relatorios: visao.relatorios.collect { [id: it.id, version: it.version, arquivo: it.arquivo] }]])
         Resultado.arquivo(manifesto, "visualizacao.json")
         visao.relatorios.each { item -> Resultado.arquivo(item.objeto, item.arquivo) }
     }
