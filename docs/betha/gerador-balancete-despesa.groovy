@@ -101,8 +101,9 @@ try {
         def grupos = [:]
         def campos = "entidade(id,nome), mes, tipoRegistro, valorPago, " +
             "despesa(numero, natureza(numero,descricao), funcao(numero,descricao), " +
-            "organograma(nivel,numero,descricao,organogramaPai(numero,descricao, " +
-            "organogramaPai(numero,descricao,organogramaPai(numero,descricao))))), " +
+            "organograma(nivel,numero,descricao,organogramaPai(nivel,numero,descricao, " +
+            "organogramaPai(nivel,numero,descricao,organogramaPai(nivel,numero,descricao))))), " +
+            "empenho.natureza(numero,descricao), " +
             "recurso(numero,descricao), " +
             "empenho.recursoVinculo.recurso(numero,descricao), " +
             "empenho.recursoVinculoDetalhamento.recurso(numero,descricao)"

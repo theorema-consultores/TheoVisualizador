@@ -26,3 +26,9 @@ test('does not return a dynamic source from the adapted generator', async () => 
   assert.doesNotMatch(source, /Dados\.dinamico\.v2\.novo/);
   assert.match(source, /arquivoResultado\.escreverObjeto/);
 });
+
+test('loads hierarchy levels and the legacy executed-nature fallback', async () => {
+  const source = await readFile(path, 'utf8');
+  assert.equal((source.match(/organogramaPai\(nivel/g) || []).length, 3);
+  assert.match(source, /empenho\.natureza\(numero,descricao\)/);
+});
