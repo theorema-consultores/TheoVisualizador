@@ -19,7 +19,6 @@ test('declares the expense JSON source contract and vision package', async () =>
   assert.match(source, /exercicios\s*=\s*\[\(exercicio - 1\), exercicio\]/);
   assert.match(source, /parametros\?\.p_entidadeId\?\.valor/);
   assert.match(source, /parametros\?\.entidade\?\.selecionados\?\.valor/);
-  assert.match(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
   assert.match(source, /valorPago/);
   assert.match(source, /despesa\.organograma/);
   assert.match(source, /despesa\.funcao/);
@@ -29,9 +28,14 @@ test('declares the expense JSON source contract and vision package', async () =>
   assert.match(source, /valorPago12/);
   assert.match(source, /totalMeses/);
   assert.match(source, /balancete-despesa\.json/);
-  assert.match(source, /variaveis\.visao\.adicionarRelatorio/);
-  assert.doesNotMatch(source, /def visao\s*=\s*\[/);
-  assert.doesNotMatch(source, /visao\.empacotar/);
+  assert.match(source, /def visao\s*=\s*\[/);
+  assert.match(source, /visualizacao\.json/);
+  assert.match(source, /visao\.adicionarRelatorio/);
+  assert.match(source, /visao\.empacotar/);
+  assert.match(source, /Resultado\.arquivo\(manifesto, "visualizacao\.json"\)/);
+  assert.match(source, /id: "balancete-despesa"/);
+  assert.doesNotMatch(source, /variaveis\.visao/);
+  assert.doesNotMatch(source, /notificacoesUtil\.setMsgError/);
 });
 
 test('does not return a dynamic source from the adapted generator', async () => {
@@ -46,7 +50,7 @@ test('loads hierarchy levels and the legacy executed-nature fallback', async () 
   assert.match(source, /empenho\.natureza\(numero,descricao\)/);
 });
 
-test('uses the legacy monthly path required to reproduce paid expense data', async () => {
+test('uses the benchmarked annual path required to reproduce paid expense data', async () => {
   const source = await readFile(path, 'utf8');
   const camposDespesa = source.match(
     /def camposDespesa = ([\s\S]*?)\n\n  def camposMovimento/
@@ -56,8 +60,9 @@ test('uses the legacy monthly path required to reproduce paid expense data', asy
     camposDespesa,
     /organogramaPai\(nivel,numero,descricao\)\)\)\)/
   );
-  assert.match(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
   assert.match(source, /movimentacaoBalanceteMensalDespesa\.busca/);
+  assert.doesNotMatch(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
+  assert.doesNotMatch(source, /\(MES_INICIO\.\.MES_FIM\)\.each \{ mes ->/);
   assert.match(source, /despesaOrcamentaria\.busca/);
   assert.match(source, /empenhos\.busca/);
   assert.match(source, /despesa\.id/);

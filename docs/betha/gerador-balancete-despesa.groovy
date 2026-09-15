@@ -1,11 +1,51 @@
 /*
  * Gerador exclusivo do TheoView.
  *
- * Reproduz o detalhamento mensal pago da fonte legada:
+ * Gera a visão do detalhamento mensal pago:
  * Organograma nível 2, Função, Recurso executado e Natureza executada.
+ *
+ * Saída:
+ *   balancete-despesa.json
+ *   visualizacao.json
  */
 
-try {
+// Mesmo contrato de visão usado pela fonte do Balancete da Receita.
+def visao = [
+  relatorios: [],
+  temasSemLicenca: [],
+  adicionarRelatorio: { Map relatorio ->
+    if (!relatorio.id || !relatorio.version || !relatorio.nome || !relatorio.arquivo) {
+      throw new IllegalArgumentException("Relatório da visão exige id, version, nome e arquivo.")
+    }
+    visao.relatorios << [
+      id: relatorio.id,
+      version: relatorio.version,
+      arquivo: relatorio.nome,
+      objeto: relatorio.arquivo
+    ]
+    relatorio.arquivo
+  },
+  empacotar: {
+    if (!visao.relatorios) {
+      throw new IllegalStateException("A visão deve possuir pelo menos um relatório.")
+    }
+    def manifesto = Arquivo.novo("visualizacao.json", "json")
+    manifesto.escreverObjeto([
+      schemaVersion: "1.0.0",
+      visao: [
+        id: "visao-contabil",
+        nome: "Visão Contábil",
+        temasSemLicenca: visao.temasSemLicenca,
+        relatorios: visao.relatorios.collect {
+          [id: it.id, version: it.version, arquivo: it.arquivo]
+        }
+      ]
+    ])
+    Resultado.arquivo(manifesto, "visualizacao.json")
+    visao.relatorios.each { item -> Resultado.arquivo(item.objeto, item.arquivo) }
+  }
+]
+
   def utilitarios = Scripts.utilitarios_contabil_cloud.importar()
   def siaficIdentificacao = utilitarios.siaficIdentificacao()
   def entidadeContexto = contextoExecucao?.idEntidade
@@ -55,7 +95,7 @@ try {
 
   final def MES_INICIO = 1
   final def MES_FIM = 12
-  final def VERSAO_GERADOR = "2026-09-14-03"
+  final def VERSAO_GERADOR = "2026-09-14-06"
 
   def texto = { value -> value == null ? "" : String.valueOf(value).trim() }
   def mesesZerados = {
@@ -116,32 +156,18 @@ try {
     despesas
   }
 
-  def buscarMovimentosMes = { ano, entidade, mes ->
+  def buscarMovimentosAno = { ano, entidade ->
     def criterio = "exercicio.ano = " + ano +
       " and entidade.id in (" + entidade + ")" +
-      " and mes = " + mes
+      " and mes >= " + MES_INICIO +
+      " and mes <= " + MES_FIM
     def movimentos = []
 
-    try {
-      Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesaExercicio.busca(
-        campos: camposMovimento,
-        criterio: criterio,
-        parametros: [exercicio: ano]
-      ).each { item ->
-        movimentos << item
-      }
-    } catch (Exception erroFonteExercicio) {
-      imprimir "[GERADOR] Fonte por exercício falhou para entidade " + entidade +
-        ", mês " + mes + "; usando fonte mensal. Motivo: " +
-        erroFonteExercicio.toString()
-
-      movimentos = []
-      Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesa.busca(
-        campos: camposMovimento,
-        criterio: criterio
-      ).each { item ->
-        movimentos << item
-      }
+    Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesa.busca(
+      campos: camposMovimento,
+      criterio: criterio
+    ).each { item ->
+      movimentos << item
     }
 
     movimentos
@@ -191,63 +217,61 @@ try {
     def grupos = [:]
 
     entidadesFiltro.each { entidadeId ->
-      (MES_INICIO..MES_FIM).each { mes ->
-        def movimentos = buscarMovimentosMes(ano, entidadeId, mes)
-        def empenhos = carregarEmpenhos(movimentos)
+      def movimentos = buscarMovimentosAno(ano, entidadeId)
+      def empenhos = carregarEmpenhos(movimentos)
 
-        movimentos.each { item ->
-          def despesa = despesas[item?.despesa?.id]
-          if (despesa == null) {
-            return
-          }
-
-          def ehOrcamento = texto(item.tipoRegistro).toUpperCase() == "ORCAMENTO"
-          def empenho = empenhos[item?.empenho?.id]
-          if (!ehOrcamento) {
-            def exercicioEmpenho = empenho?.exercicio?.ano
-            if (exercicioEmpenho == null ||
-              Integer.valueOf(String.valueOf(exercicioEmpenho)) != ano) {
-              return
-            }
-          }
-
-          def natureza = ehOrcamento
-            ? despesa.natureza
-            : empenho?.natureza ?: despesa.natureza
-          if (!natureza?.numero || !natureza?.descricao) {
-            return
-          }
-
-          def recurso = ehOrcamento
-            ? item.recurso
-            : empenho?.recursoVinculoDetalhamento?.recurso ?:
-              empenho?.recursoVinculo?.recurso ?:
-              item.recurso
-          def organograma = organogramaNivel2(despesa.organograma)
-          def funcao = despesa.funcao ?: [:]
-          def chave = [
-            entidadeId: item.entidade?.id ?: entidadeId,
-            entidadeNome: texto(item.entidade?.nome),
-            organograma: formatar(mascaraOrganograma, organograma.numero),
-            descricaoOrganograma: texto(organograma.descricao),
-            funcao: texto(funcao.numero),
-            descricaoFuncao: texto(funcao.descricao),
-            recurso: formatar(mascaraRecurso, recurso?.numero),
-            descricaoRecurso: texto(recurso?.descricao),
-            natureza: formatar(mascaraNatureza, natureza.numero),
-            descricao: texto(natureza.descricao)
-          ]
-
-          def grupo = grupos[chave]
-          if (grupo == null) {
-            grupo = [chave: chave, meses: mesesZerados()]
-            grupos[chave] = grupo
-          }
-
-          def chaveMes = String.valueOf(item.mes)
-          grupo.meses[chaveMes] =
-            (grupo.meses[chaveMes] ?: 0.0) + (item.valorPago ?: 0.0)
+      movimentos.each { item ->
+        def despesa = despesas[item?.despesa?.id]
+        if (despesa == null) {
+          return
         }
+
+        def ehOrcamento = texto(item.tipoRegistro).toUpperCase() == "ORCAMENTO"
+        def empenho = empenhos[item?.empenho?.id]
+        if (!ehOrcamento) {
+          def exercicioEmpenho = empenho?.exercicio?.ano
+          if (exercicioEmpenho == null ||
+            Integer.valueOf(String.valueOf(exercicioEmpenho)) != ano) {
+            return
+          }
+        }
+
+        def natureza = ehOrcamento
+          ? despesa.natureza
+          : empenho?.natureza ?: despesa.natureza
+        if (!natureza?.numero || !natureza?.descricao) {
+          return
+        }
+
+        def recurso = ehOrcamento
+          ? item.recurso
+          : empenho?.recursoVinculoDetalhamento?.recurso ?:
+            empenho?.recursoVinculo?.recurso ?:
+            item.recurso
+        def organograma = organogramaNivel2(despesa.organograma)
+        def funcao = despesa.funcao ?: [:]
+        def chave = [
+          entidadeId: item.entidade?.id ?: entidadeId,
+          entidadeNome: texto(item.entidade?.nome),
+          organograma: formatar(mascaraOrganograma, organograma.numero),
+          descricaoOrganograma: texto(organograma.descricao),
+          funcao: texto(funcao.numero),
+          descricaoFuncao: texto(funcao.descricao),
+          recurso: formatar(mascaraRecurso, recurso?.numero),
+          descricaoRecurso: texto(recurso?.descricao),
+          natureza: formatar(mascaraNatureza, natureza.numero),
+          descricao: texto(natureza.descricao)
+        ]
+
+        def grupo = grupos[chave]
+        if (grupo == null) {
+          grupo = [chave: chave, meses: mesesZerados()]
+          grupos[chave] = grupo
+        }
+
+        def chaveMes = String.valueOf(item.mes)
+        grupo.meses[chaveMes] =
+          (grupo.meses[chaveMes] ?: 0.0) + (item.valorPago ?: 0.0)
       }
     }
 
@@ -321,12 +345,13 @@ try {
   def arquivoResultado = Arquivo.novo("balancete-despesa.json", "json")
   arquivoResultado.escreverObjeto(dadosJson)
 
-  variaveis.visao.adicionarRelatorio(
+  visao.adicionarRelatorio(
     id: "balancete-despesa",
     version: "1.0.0",
     nome: "balancete-despesa.json",
     arquivo: arquivoResultado
   )
+  visao.empacotar()
 
   imprimir "[GERADOR " + VERSAO_GERADOR + "] Finalizado: " +
     dadosJson.totalGeralRegistros + " registros em " +
@@ -334,8 +359,3 @@ try {
   imprimir "[GERADOR] Protocolo: " + protocolo
 
   retornar protocolo
-} catch (Exception erro) {
-  def notificacoesUtil = importar "bth.contabil.utilitarios.notifica.execucao"
-  notificacoesUtil.setMsgError(tipo: "BALANCETE-DESP", isMsgApp: true)
-  suspender(erro.toString())
-}
