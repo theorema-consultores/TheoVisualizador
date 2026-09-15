@@ -9,6 +9,7 @@ const exec = promisify(execFile);
 test('build emits the physical Balancete page at the public dashboard path', async () => {
   await exec(process.platform === 'win32' ? 'cmd.exe' : 'npm', process.platform === 'win32' ? ['/c', 'npm', 'run', 'build'] : ['run', 'build']);
   await assert.doesNotReject(access('dist/dashboards/balancete-receita/index.html'));
+  await assert.doesNotReject(access('dist/dashboards/balancete-despesa/index.html'));
   await assert.doesNotReject(access('dist/index.html'));
   const assets = await readdir('dist/assets');
   const styles = await Promise.all(assets.filter(name => name.endsWith('.css')).map(name => readFile(`dist/assets/${name}`, 'utf8')));

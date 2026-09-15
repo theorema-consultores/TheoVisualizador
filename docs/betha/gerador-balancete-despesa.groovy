@@ -58,7 +58,7 @@
 
   final def MES_INICIO = 1
   final def MES_FIM = 12
-  final def VERSAO_GERADOR = "2026-09-14-08"
+  final def VERSAO_GERADOR = "2026-09-15-01"
 
   def texto = { value -> value == null ? "" : String.valueOf(value).trim() }
   def mesesZerados = {
@@ -75,65 +75,53 @@
     atual
   }
 
-  def camposDespesa = "id, numero, funcao(numero,descricao), " +
-    "natureza(id,numero,nivel,descricao), " +
+  def camposDespesa = "id, funcao(numero,descricao), " +
+    "natureza(numero,descricao), " +
     "organograma(nivel,numero,descricao,organogramaPai(nivel,numero,descricao, " +
     "organogramaPai(nivel,numero,descricao,organogramaPai(nivel,numero,descricao))))"
 
-  def camposMovimento = "id, entidade(id,nome), despesa.id, empenho.id, " +
-    "empenho.exercicio.ano, despesa.organograma(numero,descricao), " +
-    "despesa(organograma(nivel,numero,descricao,organogramaPai(nivel,numero,descricao, " +
-    "organogramaPai(nivel,numero,descricao,organogramaPai(nivel,numero,descricao))))), " +
-    "despesa.funcao(numero,descricao), despesa.natureza(numero,descricao), " +
-    "empenho.natureza(numero,descricao), recurso(id,numero,descricao,superavitFinanceiro), " +
-    "valorPago, mes, tipoRegistro, despesa.natureza.nivel, " +
-    "empenho.recursoVinculo.recurso(id,numero,descricao,superavitFinanceiro), " +
-    "empenho.recursoVinculoDetalhamento.recurso(id,numero,descricao,superavitFinanceiro)"
+  def camposMovimento = "entidade(id,nome), despesa.id, empenho.id, " +
+    "recurso(numero,descricao), valorPago, mes, tipoRegistro"
 
-  def camposEmpenho = "id, natureza(id,numero,descricao), exercicio.ano, " +
-    "recursoVinculo.recurso(id,numero,descricao,superavitFinanceiro), " +
-    "recursoVinculoDetalhamento.recurso(id,numero,descricao,superavitFinanceiro)"
+  def camposEmpenho = "id, natureza(numero,descricao), exercicio.ano, " +
+    "recursoVinculo.recurso(numero,descricao), " +
+    "recursoVinculoDetalhamento.recurso(numero,descricao)"
 
   def carregarDespesas = { ano ->
     def despesas = [:]
 
-    entidadesFiltro.each { entidade ->
-      def criterio = "loa.exercicio.ano = " + ano +
-        " and entidade.id in (" + entidade + ")"
+    def criterio = "loa.exercicio.ano = " + ano +
+      " and entidade.id in (" + entidadesFiltro.join(",") + ")"
 
-      Dados.contabilidade.v1.despesaOrcamentaria.busca(
-        campos: camposDespesa,
-        criterio: criterio
-      ).each { despesa ->
-        despesas[despesa.id] = despesa
-      }
+    Dados.contabilidade.v1.despesaOrcamentaria.busca(
+      campos: camposDespesa,
+      criterio: criterio
+    ).each { despesa ->
+      despesas[despesa.id] = despesa
+    }
 
-      Dados.contabilidade.v1.despesasNaoPrevistas.busca(
-        campos: camposDespesa,
-        criterio: criterio
-      ).each { despesa ->
-        despesas[despesa.id] = despesa
-      }
+    Dados.contabilidade.v1.despesasNaoPrevistas.busca(
+      campos: camposDespesa,
+      criterio: criterio
+    ).each { despesa ->
+      despesas[despesa.id] = despesa
     }
 
     despesas
   }
 
-  def buscarMovimentosAno = { ano, entidade ->
+  def buscarMovimentosAno = { ano ->
     def movimentos = []
 
-    (MES_INICIO..MES_FIM).each { mes ->
-      def criterio = "exercicio.ano = " + ano +
-        " and entidade.id in (" + entidade + ")" +
-        " and mes = " + mes
+    def criterio = "exercicio.ano = " + ano +
+      " and entidade.id in (" + entidadesFiltro.join(",") + ")"
 
-      Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesaExercicio.busca(
-        campos: camposMovimento,
-        criterio: criterio,
-        parametros: [exercicio: ano]
-      ).each { item ->
-        movimentos << item
-      }
+    Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesaExercicio.busca(
+      campos: camposMovimento,
+      criterio: criterio,
+      parametros: [exercicio: ano]
+    ).each { item ->
+      movimentos << item
     }
 
     movimentos
@@ -182,63 +170,61 @@
     def despesas = carregarDespesas(ano)
     def grupos = [:]
 
-    entidadesFiltro.each { entidadeId ->
-      def movimentos = buscarMovimentosAno(ano, entidadeId)
-      def empenhos = carregarEmpenhos(movimentos)
+    def movimentos = buscarMovimentosAno(ano)
+    def empenhos = carregarEmpenhos(movimentos)
 
-      movimentos.each { item ->
-        def despesa = despesas[item?.despesa?.id]
-        if (despesa == null) {
-          return
-        }
-
-        def ehOrcamento = texto(item.tipoRegistro).toUpperCase() == "ORCAMENTO"
-        def empenho = empenhos[item?.empenho?.id]
-        if (!ehOrcamento) {
-          def exercicioEmpenho = empenho?.exercicio?.ano
-          if (exercicioEmpenho == null ||
-            Integer.valueOf(String.valueOf(exercicioEmpenho)) != ano) {
-            return
-          }
-        }
-
-        def natureza = ehOrcamento
-          ? despesa.natureza
-          : empenho?.natureza ?: despesa.natureza
-        if (!natureza?.numero || !natureza?.descricao) {
-          return
-        }
-
-        def recurso = ehOrcamento
-          ? item.recurso
-          : empenho?.recursoVinculoDetalhamento?.recurso ?:
-            empenho?.recursoVinculo?.recurso ?:
-            item.recurso
-        def organograma = organogramaNivel2(despesa.organograma)
-        def funcao = despesa.funcao ?: [:]
-        def chave = [
-          entidadeId: item.entidade?.id ?: entidadeId,
-          entidadeNome: texto(item.entidade?.nome),
-          organograma: formatar(mascaraOrganograma, organograma.numero),
-          descricaoOrganograma: texto(organograma.descricao),
-          funcao: texto(funcao.numero),
-          descricaoFuncao: texto(funcao.descricao),
-          recurso: formatar(mascaraRecurso, recurso?.numero),
-          descricaoRecurso: texto(recurso?.descricao),
-          natureza: formatar(mascaraNatureza, natureza.numero),
-          descricao: texto(natureza.descricao)
-        ]
-
-        def grupo = grupos[chave]
-        if (grupo == null) {
-          grupo = [chave: chave, meses: mesesZerados()]
-          grupos[chave] = grupo
-        }
-
-        def chaveMes = String.valueOf(item.mes)
-        grupo.meses[chaveMes] =
-          (grupo.meses[chaveMes] ?: 0.0) + (item.valorPago ?: 0.0)
+    movimentos.each { item ->
+      def despesa = despesas[item?.despesa?.id]
+      if (despesa == null) {
+        return
       }
+
+      def ehOrcamento = texto(item.tipoRegistro).toUpperCase() == "ORCAMENTO"
+      def empenho = empenhos[item?.empenho?.id]
+      if (!ehOrcamento) {
+        def exercicioEmpenho = empenho?.exercicio?.ano
+        if (exercicioEmpenho == null ||
+          Integer.valueOf(String.valueOf(exercicioEmpenho)) != ano) {
+          return
+        }
+      }
+
+      def natureza = ehOrcamento
+        ? despesa.natureza
+        : empenho?.natureza ?: despesa.natureza
+      if (!natureza?.numero || !natureza?.descricao) {
+        return
+      }
+
+      def recurso = ehOrcamento
+        ? item.recurso
+        : empenho?.recursoVinculoDetalhamento?.recurso ?:
+        empenho?.recursoVinculo?.recurso ?:
+        item.recurso
+      def organograma = organogramaNivel2(despesa.organograma)
+      def funcao = despesa.funcao ?: [:]
+      def chave = [
+        entidadeId: item.entidade?.id,
+        entidadeNome: texto(item.entidade?.nome),
+        organograma: formatar(mascaraOrganograma, organograma.numero),
+        descricaoOrganograma: texto(organograma.descricao),
+        funcao: texto(funcao.numero),
+        descricaoFuncao: texto(funcao.descricao),
+        recurso: formatar(mascaraRecurso, recurso?.numero),
+        descricaoRecurso: texto(recurso?.descricao),
+        natureza: formatar(mascaraNatureza, natureza.numero),
+        descricao: texto(natureza.descricao)
+      ]
+
+      def grupo = grupos[chave]
+      if (grupo == null) {
+        grupo = [chave: chave, meses: mesesZerados()]
+        grupos[chave] = grupo
+      }
+
+      def chaveMes = String.valueOf(item.mes)
+      grupo.meses[chaveMes] =
+        (grupo.meses[chaveMes] ?: 0.0) + (item.valorPago ?: 0.0)
     }
 
     def registros = grupos.collect { chave, acumulado ->

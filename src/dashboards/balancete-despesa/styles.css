@@ -1,0 +1,123 @@
+@import '../../styles.css';
+
+.despesa-dashboard {
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 36px 0 48px;
+}
+
+.despesa-dashboard .hero {
+  padding: 28px;
+  color: var(--text);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-bottom: 4px solid var(--brand-brown);
+  border-radius: 7px;
+}
+
+.despesa-dashboard .hero h1 { margin: 7px 0 10px; font-size: clamp(1.65rem, 3vw, 2rem); line-height: 1.2; }
+.despesa-dashboard .eyebrow { color: var(--brand-brown); font-size: .75rem; font-weight: 700; letter-spacing: .1em; }
+.despesa-dashboard .hero-detail { margin: 0; color: var(--muted); }
+.despesa-dashboard .source-panel { padding: 16px 20px; margin: 20px 0; background: var(--surface-raised); border: 1px solid var(--line); border-left: 4px solid var(--action); border-radius: 6px; }
+.despesa-dashboard .source-panel strong { color: var(--action-dark); }
+.despesa-dashboard .source-panel p { margin: 6px 0 0; }
+
+.despesa-dashboard .execution-panel { margin-bottom: 20px; }
+.despesa-dashboard .execution-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.despesa-dashboard .kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
+.despesa-dashboard .kpi-card { min-height: 132px; }
+.despesa-dashboard .kpi-card .value { color: var(--action-dark); font-size: clamp(1rem, 1.7vw, 1.3rem); }
+.despesa-dashboard .kpi-card .label { min-height: 30px; }
+
+.despesa-dashboard .filters { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin: 22px 0; }
+.despesa-dashboard .filter-control { display: grid; flex: 1 1 180px; gap: 5px; min-width: 160px; color: var(--muted); font-size: .75rem; font-weight: 700; }
+.despesa-dashboard .filter-control:last-of-type { flex-grow: 1.5; }
+.despesa-dashboard .filter-label { text-transform: uppercase; }
+.despesa-dashboard .filter-dropdown { position: relative; }
+.despesa-dashboard .filter-dropdown .dropdown-toggle { display: flex; width: 100%; min-height: 2.65rem; justify-content: space-between; align-items: center; padding: .6rem .75rem; color: var(--text); text-align: left; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 5px; font: inherit; cursor: pointer; }
+.despesa-dashboard .filter-dropdown .dropdown-toggle:hover { border-color: var(--action); }
+.despesa-dashboard .filter-dropdown .dropdown-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.despesa-dashboard .dropdown-icon { margin-left: .5rem; font-size: 1.1rem; line-height: 1; }
+.despesa-dashboard .filter-dropdown .dropdown-toggle[aria-expanded="true"] .dropdown-icon { transform: rotate(180deg); }
+.despesa-dashboard .filter-dropdown .dropdown-menu { position: absolute; top: calc(100% + 4px); right: 0; left: 0; z-index: 5; max-height: 240px; overflow-y: auto; padding: 4px 0; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 5px; box-shadow: 0 6px 16px rgb(32 42 67 / 18%); }
+.despesa-dashboard .filter-dropdown .dropdown-menu[hidden] { display: none; }
+.despesa-dashboard .filter-dropdown .dropdown-item { display: block; width: 100%; padding: .62rem .75rem; color: var(--text); text-align: left; background: transparent; border: 0; font: inherit; cursor: pointer; }
+.despesa-dashboard .filter-dropdown .dropdown-item:hover, .despesa-dashboard .filter-dropdown .dropdown-item:focus-visible, .despesa-dashboard .filter-dropdown .dropdown-item[aria-selected="true"] { color: var(--brand-navy-deep); background: var(--brand-brown-soft); outline: none; }
+.despesa-dashboard .secondary-action { min-height: 2.65rem; padding: .6rem .8rem; color: var(--action-dark); font: 700 .8rem/1.2 var(--font-ui); white-space: nowrap; cursor: pointer; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 5px; }
+.despesa-dashboard .secondary-action:hover, .despesa-dashboard .secondary-action:focus-visible { border-color: var(--action); outline: 2px solid var(--focus); outline-offset: 2px; }
+.despesa-dashboard .secondary-action:disabled { cursor: not-allowed; opacity: .45; }
+
+.despesa-dashboard .tabs-header { margin: 22px 0; }
+.despesa-dashboard .tab-button[aria-selected="true"] { color: var(--action-dark); }
+.despesa-dashboard .tab-button[aria-selected="true"]::after { background: var(--action); }
+.despesa-dashboard .tab-content { padding: 20px; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 6px; }
+.despesa-dashboard .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.despesa-dashboard .search-input { flex: 1; min-width: 220px; padding: .62rem .75rem; color: var(--text); font: inherit; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 5px; }
+.despesa-dashboard .search-input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.despesa-dashboard .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+.despesa-dashboard .chart-panel { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 6px; }
+.despesa-dashboard .chart-panel h2 { margin: 0 0 14px; font-size: 1rem; }
+.despesa-dashboard .chart-note { margin: -8px 0 16px; color: var(--muted); font-size: .75rem; }
+.despesa-dashboard .rank { margin-bottom: 12px; }
+.despesa-dashboard .rankline { display: flex; justify-content: space-between; gap: 14px; font-size: .72rem; }
+.despesa-dashboard .rankline span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.despesa-dashboard .rankline strong { color: var(--action-dark); white-space: nowrap; }
+.despesa-dashboard .track { height: 7px; margin-top: 5px; overflow: hidden; background: var(--surface); border-radius: 4px; }
+.despesa-dashboard .fill { height: 100%; background: var(--action); border-radius: 4px; }
+.despesa-dashboard .months-chart { display: flex; height: 215px; gap: 7px; align-items: end; padding-top: 20px; }
+.despesa-dashboard .month-column { display: flex; min-width: 0; height: 100%; flex: 1; flex-direction: column; justify-content: end; align-items: center; }
+.despesa-dashboard .month-bars { display: flex; width: 100%; height: 185px; gap: 3px; align-items: end; justify-content: center; }
+.despesa-dashboard .month-bar { width: 42%; min-height: 3px; padding: 0; background: var(--action); border: 0; border-radius: 4px 4px 0 0; cursor: pointer; }
+.despesa-dashboard .month-bar.previous { background: var(--brand-brown); }
+.despesa-dashboard .month-bar.selected { background: var(--brand-navy-deep); }
+.despesa-dashboard .month-label { margin-top: 7px; color: var(--muted); font-size: .65rem; }
+.despesa-dashboard .month-label.selected { color: var(--action-dark); font-weight: 700; }
+
+.despesa-dashboard .tablewrap { max-height: 600px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+.despesa-dashboard table { width: 100%; min-width: 920px; border-collapse: collapse; font-size: .78rem; }
+.despesa-dashboard th { position: sticky; top: 0; z-index: 1; padding: 0; text-align: left; background: var(--surface); }
+.despesa-dashboard th button { width: 100%; padding: 11px 8px; color: var(--muted); font: 700 .75rem/1.2 var(--font-ui); text-align: left; white-space: nowrap; cursor: pointer; background: transparent; border: 0; }
+.despesa-dashboard th button::after { margin-left: 5px; content: "⇅"; opacity: .45; }
+.despesa-dashboard th[aria-sort="ascending"] button::after { content: "▲"; opacity: 1; }
+.despesa-dashboard th[aria-sort="descending"] button::after { content: "▼"; opacity: 1; }
+.despesa-dashboard td { padding: 11px 8px; border-bottom: 1px solid var(--line); }
+.despesa-dashboard td:first-child { font-family: ui-monospace, Consolas, monospace; white-space: nowrap; }
+.despesa-dashboard td:nth-child(2) { min-width: 220px; }
+.despesa-dashboard td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.despesa-dashboard td.negative { color: var(--brand-brown); }
+.despesa-dashboard td.positive { color: #2e7d32; }
+.despesa-dashboard .main-row { cursor: pointer; }
+.despesa-dashboard .main-row:hover, .despesa-dashboard .main-row:focus { background: color-mix(in srgb, var(--action) 5%, transparent); outline: none; }
+.despesa-dashboard .detail-link { padding: 0; color: var(--action-dark); text-decoration: underline; text-align: left; background: transparent; border: 0; font: inherit; cursor: pointer; }
+.despesa-dashboard .detail-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.despesa-dashboard .details-row { background: var(--surface); }
+.despesa-dashboard .details-row[hidden] { display: none; }
+.despesa-dashboard .details-row summary { padding: 12px 18px; color: var(--action-dark); font-weight: 700; cursor: pointer; }
+.despesa-dashboard .details-container { padding: 4px 18px 20px; }
+.despesa-dashboard .details-title { font-weight: 750; }
+.despesa-dashboard .details-sub { margin-top: 3px; color: var(--muted); font-size: .78rem; }
+.despesa-dashboard .cards-month-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+.despesa-dashboard .month-card { padding: 12px 14px; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 7px; }
+.despesa-dashboard .m-title { margin-bottom: 6px; color: var(--muted); font-size: .75rem; font-weight: 650; }
+.despesa-dashboard .m-line { margin-bottom: 2px; font: .78rem ui-monospace, Consolas, monospace; }
+.despesa-dashboard .m-var { margin: 5px 0 8px; font: 700 .75rem ui-monospace, Consolas, monospace; }
+.despesa-dashboard .month-bars-detail { display: flex; height: 36px; gap: 5px; align-items: end; padding: 4px 9px 0; background: var(--surface); border-radius: 4px; }
+.despesa-dashboard .month-bars-detail .month-bar { width: auto; min-height: 4px; flex: 1; }
+.despesa-dashboard .bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 15px; }
+.despesa-dashboard .pagination { display: flex; gap: 8px; align-items: center; }
+.despesa-dashboard .note { color: var(--muted); font-size: .75rem; }
+
+@media (max-width: 950px) {
+  .despesa-dashboard .execution-grid, .despesa-dashboard .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .despesa-dashboard .charts { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .despesa-dashboard { width: min(100% - 24px, 1200px); padding-top: 18px; }
+  .despesa-dashboard .hero { padding: 20px; }
+  .despesa-dashboard .execution-grid, .despesa-dashboard .kpi-grid { grid-template-columns: 1fr; }
+  .despesa-dashboard .tab-content { padding: 14px; }
+  .despesa-dashboard .filters { align-items: stretch; }
+  .despesa-dashboard .filter-control, .despesa-dashboard .secondary-action { flex-basis: 100%; }
+  .despesa-dashboard .months-chart { gap: 3px; }
+}
