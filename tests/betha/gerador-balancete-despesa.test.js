@@ -12,7 +12,7 @@ const fallbackPath = new URL(
   import.meta.url
 );
 
-test('declares the expense JSON source contract and vision package', async () => {
+test('declares the expense JSON source contract and registers in the caller vision', async () => {
   const source = await readFile(path, 'utf8');
   assert.match(source, /parametros\?\.p_exercicio\?\.valor/);
   assert.match(source, /parametros\?\.exercicio\?\.valor/);
@@ -28,13 +28,11 @@ test('declares the expense JSON source contract and vision package', async () =>
   assert.match(source, /valorPago12/);
   assert.match(source, /totalMeses/);
   assert.match(source, /balancete-despesa\.json/);
-  assert.match(source, /def visao\s*=\s*\[/);
-  assert.match(source, /visualizacao\.json/);
-  assert.match(source, /visao\.adicionarRelatorio/);
-  assert.match(source, /visao\.empacotar/);
-  assert.match(source, /Resultado\.arquivo\(manifesto, "visualizacao\.json"\)/);
+  assert.match(source, /variaveis\.visao\.adicionarRelatorio/);
   assert.match(source, /id: "balancete-despesa"/);
-  assert.doesNotMatch(source, /variaveis\.visao/);
+  assert.doesNotMatch(source, /def visao\s*=\s*\[/);
+  assert.doesNotMatch(source, /visao\.empacotar/);
+  assert.doesNotMatch(source, /Resultado\.arquivo/);
   assert.doesNotMatch(source, /notificacoesUtil\.setMsgError/);
 });
 
@@ -47,13 +45,17 @@ test('does not return a dynamic source from the adapted generator', async () => 
 test('loads hierarchy levels and the legacy executed-nature fallback', async () => {
   const source = await readFile(path, 'utf8');
   assert.ok((source.match(/organogramaPai\(nivel/g) || []).length >= 3);
-  assert.match(source, /empenho\.natureza\(numero,descricao\)/);
+  assert.match(source, /def camposEmpenho = "id, natureza\(id,numero,descricao\)/);
+  assert.match(source, /empenho\?\.natureza/);
 });
 
-test('uses the benchmarked annual path required to reproduce paid expense data', async () => {
+test('reads paid expense one month at a time with the required movement fields', async () => {
   const source = await readFile(path, 'utf8');
   const camposDespesa = source.match(
     /def camposDespesa = ([\s\S]*?)\n\n  def camposMovimento/
+  )?.[1] ?? '';
+  const camposMovimento = source.match(
+    /def camposMovimento = ([\s\S]*?)\n\n  def camposEmpenho/
   )?.[1] ?? '';
 
   assert.match(
@@ -62,12 +64,20 @@ test('uses the benchmarked annual path required to reproduce paid expense data',
   );
   assert.match(source, /movimentacaoBalanceteMensalDespesa\.busca/);
   assert.doesNotMatch(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
-  assert.doesNotMatch(source, /\(MES_INICIO\.\.MES_FIM\)\.each \{ mes ->/);
+  assert.match(source, /\(MES_INICIO\.\.MES_FIM\)\.each \{ mes ->/);
+  assert.match(source, /" and mes = " \+ mes/);
+  assert.doesNotMatch(source, /" and mes >= " \+ MES_INICIO/);
+  assert.doesNotMatch(source, /" and mes <= " \+ MES_FIM/);
   assert.match(source, /despesaOrcamentaria\.busca/);
   assert.match(source, /empenhos\.busca/);
-  assert.match(source, /despesa\.id/);
-  assert.match(source, /empenho\.id/);
-  assert.match(source, /empenho\.exercicio\.ano/);
+  assert.match(camposMovimento, /entidade\(id,nome\)/);
+  assert.match(camposMovimento, /despesa\.id/);
+  assert.match(camposMovimento, /empenho\.id/);
+  assert.match(camposMovimento, /recurso\(numero,descricao\)/);
+  assert.match(camposMovimento, /valorPago, mes, tipoRegistro/);
+  assert.doesNotMatch(camposMovimento, /despesa\(organograma/);
+  assert.doesNotMatch(camposMovimento, /empenho\.exercicio\.ano/);
+  assert.doesNotMatch(camposMovimento, /recursoVinculo/);
 });
 
 test('trial source loads all months in one query per entity and year', async () => {

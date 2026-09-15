@@ -6,45 +6,8 @@
  *
  * Saída:
  *   balancete-despesa.json
- *   visualizacao.json
+ *   registro na visão do chamador
  */
-
-// Mesmo contrato de visão usado pela fonte do Balancete da Receita.
-def visao = [
-  relatorios: [],
-  temasSemLicenca: [],
-  adicionarRelatorio: { Map relatorio ->
-    if (!relatorio.id || !relatorio.version || !relatorio.nome || !relatorio.arquivo) {
-      throw new IllegalArgumentException("Relatório da visão exige id, version, nome e arquivo.")
-    }
-    visao.relatorios << [
-      id: relatorio.id,
-      version: relatorio.version,
-      arquivo: relatorio.nome,
-      objeto: relatorio.arquivo
-    ]
-    relatorio.arquivo
-  },
-  empacotar: {
-    if (!visao.relatorios) {
-      throw new IllegalStateException("A visão deve possuir pelo menos um relatório.")
-    }
-    def manifesto = Arquivo.novo("visualizacao.json", "json")
-    manifesto.escreverObjeto([
-      schemaVersion: "1.0.0",
-      visao: [
-        id: "visao-contabil",
-        nome: "Visão Contábil",
-        temasSemLicenca: visao.temasSemLicenca,
-        relatorios: visao.relatorios.collect {
-          [id: it.id, version: it.version, arquivo: it.arquivo]
-        }
-      ]
-    ])
-    Resultado.arquivo(manifesto, "visualizacao.json")
-    visao.relatorios.each { item -> Resultado.arquivo(item.objeto, item.arquivo) }
-  }
-]
 
   def utilitarios = Scripts.utilitarios_contabil_cloud.importar()
   def siaficIdentificacao = utilitarios.siaficIdentificacao()
@@ -95,7 +58,7 @@ def visao = [
 
   final def MES_INICIO = 1
   final def MES_FIM = 12
-  final def VERSAO_GERADOR = "2026-09-14-06"
+  final def VERSAO_GERADOR = "2026-09-14-07"
 
   def texto = { value -> value == null ? "" : String.valueOf(value).trim() }
   def mesesZerados = {
@@ -117,15 +80,8 @@ def visao = [
     "organograma(nivel,numero,descricao,organogramaPai(nivel,numero,descricao, " +
     "organogramaPai(nivel,numero,descricao,organogramaPai(nivel,numero,descricao))))"
 
-  def camposMovimento = "id, entidade(id,nome), despesa.id, empenho.id, " +
-    "empenho.exercicio.ano, despesa.organograma(numero,descricao), " +
-    "despesa(organograma(nivel,numero,descricao,organogramaPai(nivel,numero,descricao, " +
-    "organogramaPai(nivel,numero,descricao,organogramaPai(nivel,numero,descricao))))), " +
-    "despesa.funcao(numero,descricao), despesa.natureza(numero,descricao), " +
-    "empenho.natureza(numero,descricao), recurso(id,numero,descricao,superavitFinanceiro), " +
-    "valorPago, mes, tipoRegistro, despesa.natureza.nivel, " +
-    "empenho.recursoVinculo.recurso(id,numero,descricao,superavitFinanceiro), " +
-    "empenho.recursoVinculoDetalhamento.recurso(id,numero,descricao,superavitFinanceiro)"
+  def camposMovimento = "entidade(id,nome), despesa.id, empenho.id, " +
+    "recurso(numero,descricao), valorPago, mes, tipoRegistro"
 
   def camposEmpenho = "id, natureza(id,numero,descricao), exercicio.ano, " +
     "recursoVinculo.recurso(id,numero,descricao,superavitFinanceiro), " +
@@ -157,17 +113,19 @@ def visao = [
   }
 
   def buscarMovimentosAno = { ano, entidade ->
-    def criterio = "exercicio.ano = " + ano +
-      " and entidade.id in (" + entidade + ")" +
-      " and mes >= " + MES_INICIO +
-      " and mes <= " + MES_FIM
     def movimentos = []
 
-    Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesa.busca(
-      campos: camposMovimento,
-      criterio: criterio
-    ).each { item ->
-      movimentos << item
+    (MES_INICIO..MES_FIM).each { mes ->
+      def criterio = "exercicio.ano = " + ano +
+        " and entidade.id in (" + entidade + ")" +
+        " and mes = " + mes
+
+      Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesa.busca(
+        campos: camposMovimento,
+        criterio: criterio
+      ).each { item ->
+        movimentos << item
+      }
     }
 
     movimentos
@@ -345,14 +303,12 @@ def visao = [
   def arquivoResultado = Arquivo.novo("balancete-despesa.json", "json")
   arquivoResultado.escreverObjeto(dadosJson)
 
-  visao.adicionarRelatorio(
+  variaveis.visao.adicionarRelatorio(
     id: "balancete-despesa",
     version: "1.0.0",
     nome: "balancete-despesa.json",
     arquivo: arquivoResultado
   )
-  visao.empacotar()
-
   imprimir "[GERADOR " + VERSAO_GERADOR + "] Finalizado: " +
     dadosJson.totalGeralRegistros + " registros em " +
     exercicios.size() + " exercícios."
