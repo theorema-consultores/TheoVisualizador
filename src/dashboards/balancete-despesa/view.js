@@ -295,11 +295,6 @@ export function renderBalanceteDespesa(container, model) {
     element(doc, 'h1', 'Dashboard Comparativo de Balancete da Despesa'),
     element(doc, 'p', `${model.entityName} · comparativo das despesas pagas em ${model.previousYear} e ${model.currentYear}`, 'hero-detail')
   );
-  const source = element(doc, 'section', '', 'source-panel');
-  source.append(
-    element(doc, 'strong', 'Dados carregados e totais conferidos'),
-    element(doc, 'p', `${(model.previous.length + model.current.length).toLocaleString('pt-BR')} registros analíticos · despesas pagas em reais`, 'subtext')
-  );
   const kpis = element(doc, 'section', '', 'kpi-grid');
   const currentKpi = appendKpi(doc, kpis, `Exercício atual (${model.currentYear})`);
   const previousKpi = appendKpi(doc, kpis, `Exercício anterior (${model.previousYear})`, true);
@@ -318,7 +313,7 @@ export function renderBalanceteDespesa(container, model) {
   reset.type = 'button';
   const filterControls = [monthControl, periodControl, organogramControl, functionControl, resourceControl];
   filters.append(...filterControls.map(control => control.wrapper), reset);
-  root.append(hero, source, kpis, filters);
+  root.append(hero, createExecutionPanel(doc, model), kpis, filters);
 
   const tabs = element(doc, 'nav', '', 'tabs-header');
   tabs.setAttribute('role', 'tablist');

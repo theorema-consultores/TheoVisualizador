@@ -31,6 +31,8 @@ test('renders the reference expense dashboard structure', () => {
   assert.equal(container.querySelectorAll('[role="tab"]').length, 6);
   assert.equal(container.querySelectorAll('.filter-control').length, 5);
   assert.equal(container.querySelectorAll('.bar-row').length, 1);
+  assert.ok(container.querySelector('.execution-panel'));
+  assert.equal(container.querySelector('.source-panel'), null);
   assert.match(container.textContent, /Dashboard Comparativo de Balancete da Despesa/);
   assert.match(container.textContent, /Exercício atual/);
 });

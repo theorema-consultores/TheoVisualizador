@@ -1,4 +1,5 @@
 import './styles.css';
+import '../dashboard-shared.css';
 import { createTransferStore } from '../../core/transfer-store.js';
 import { downloadResult } from '../../core/download.js';
 import { startDashboard } from '../../core/dashboard-runtime.js';

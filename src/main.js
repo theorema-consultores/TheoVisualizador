@@ -1,6 +1,7 @@
 import './styles.css';
 import './dashboards/balancete-receita/styles.css';
 import './dashboards/balancete-despesa/styles.css';
+import './dashboards/dashboard-shared.css';
 import 'notyf/notyf.min.css';
 import { openArchive } from './core/archive.js';
 import { downloadResult } from './core/download.js';

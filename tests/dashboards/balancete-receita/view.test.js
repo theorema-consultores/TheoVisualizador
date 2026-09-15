@@ -11,6 +11,14 @@ test('styles the month selector with the shared UI control pattern', () => {
   assert.match(styles, /\.month-icon\s*\{[^}]*font-size:\s*1\.1rem/s);
 });
 
+test('uses one shared visual frame for both balance dashboards', () => {
+  const styles = readFileSync(new URL('../../../src/dashboards/dashboard-shared.css', import.meta.url), 'utf8');
+  assert.match(styles, /\.balancete,\s*\.despesa-dashboard\s*\{/s);
+  assert.match(styles, /\.balancete \.hero,\s*\.despesa-dashboard \.hero\s*\{/s);
+  assert.match(styles, /\.balancete \.execution-panel,\s*\.despesa-dashboard \.execution-panel\s*\{/s);
+  assert.match(styles, /\.balancete \.tab-content,\s*\.despesa-dashboard \.tab-content\s*\{/s);
+});
+
 const row = { receita: '1.1', descricao: '<script>alert(1)</script>', recurso: '1.500.01.02.03.04', origem: '01', aplicacao: '02', desdobramento: '03', detalhamento: '04', total: 120, months: Array(12).fill(10), count: 1 };
 const model = {
   entityName: 'Prefeitura', previousYear: 2024, currentYear: 2025, previous: [row], current: [{ ...row, total: 240 }],
