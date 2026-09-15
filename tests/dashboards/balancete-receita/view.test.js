@@ -13,6 +13,7 @@ test('styles the month selector with the shared UI control pattern', () => {
 
 test('uses one shared visual frame for both balance dashboards', () => {
   const styles = readFileSync(new URL('../../../src/dashboards/dashboard-shared.css', import.meta.url), 'utf8');
+  const revenueStyles = readFileSync(new URL('../../../src/dashboards/balancete-receita/styles.css', import.meta.url), 'utf8');
   const expenseStyles = readFileSync(new URL('../../../src/dashboards/balancete-despesa/styles.css', import.meta.url), 'utf8');
   assert.match(styles, /\.balancete,\s*\.despesa-dashboard\s*\{/s);
   assert.match(styles, /width:\s*min\(1400px,\s*calc\(100%\s*-\s*48px\)\)/);
@@ -21,6 +22,12 @@ test('uses one shared visual frame for both balance dashboards', () => {
   assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.hero h1/);
   assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.eyebrow/);
   assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.hero-detail/);
+  assert.doesNotMatch(revenueStyles, /\.balancete \.hero\s*\{/);
+  assert.doesNotMatch(revenueStyles, /\.balancete \.hero h1/);
+  assert.doesNotMatch(revenueStyles, /^\.kpi-grid\s*\{/m);
+  assert.doesNotMatch(revenueStyles, /^\.kpi-card\s*\{/m);
+  assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.kpi-grid\s*\{/);
+  assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.kpi-card(?:\s|\.)/);
   assert.match(styles, /\.balancete \.hero,\s*\.despesa-dashboard \.hero\s*\{/s);
   assert.match(styles, /\.balancete \.hero h1,\s*\.despesa-dashboard \.hero h1\s*\{[^}]*font:\s*700 clamp\(1\.5rem, 2\.4vw, 2rem\)/s);
   assert.match(styles, /\.balancete \.execution-panel,\s*\.despesa-dashboard \.execution-panel\s*\{/s);

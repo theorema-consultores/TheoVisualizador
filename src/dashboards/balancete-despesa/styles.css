@@ -4,13 +4,6 @@
 .despesa-dashboard .source-panel strong { color: var(--action-dark); }
 .despesa-dashboard .source-panel p { margin: 6px 0 0; }
 
-.despesa-dashboard .execution-panel { margin-bottom: 20px; }
-.despesa-dashboard .execution-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.despesa-dashboard .kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
-.despesa-dashboard .kpi-card { min-height: 132px; }
-.despesa-dashboard .kpi-card .value { color: var(--action-dark); font-size: clamp(1rem, 1.7vw, 1.3rem); }
-.despesa-dashboard .kpi-card .label { min-height: 30px; }
-
 .despesa-dashboard .filters { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin: 22px 0; }
 .despesa-dashboard .filter-control { display: grid; flex: 1 1 180px; gap: 5px; min-width: 160px; color: var(--muted); font-size: .75rem; font-weight: 700; }
 .despesa-dashboard .filter-control:last-of-type { flex-grow: 1.5; }
@@ -29,13 +22,8 @@
 .despesa-dashboard .secondary-action:hover, .despesa-dashboard .secondary-action:focus-visible { border-color: var(--action); outline: 2px solid var(--focus); outline-offset: 2px; }
 .despesa-dashboard .secondary-action:disabled { cursor: not-allowed; opacity: .45; }
 
-.despesa-dashboard .tabs-header { margin: 22px 0; }
-.despesa-dashboard .tab-button[aria-selected="true"] { color: var(--action-dark); }
-.despesa-dashboard .tab-button[aria-selected="true"]::after { background: var(--action); }
-.despesa-dashboard .tab-content { padding: 20px; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 6px; }
 .despesa-dashboard .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-.despesa-dashboard .search-input { flex: 1; min-width: 220px; padding: .62rem .75rem; color: var(--text); font: inherit; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 5px; }
-.despesa-dashboard .search-input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.despesa-dashboard .search-input { flex: 1; min-width: 220px; }
 .despesa-dashboard .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
 .despesa-dashboard .chart-panel { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 6px; }
 .despesa-dashboard .chart-panel h2 { margin: 0 0 14px; font-size: 1rem; }
@@ -56,13 +44,11 @@
 .despesa-dashboard .month-label.selected { color: var(--action-dark); font-weight: 700; }
 
 .despesa-dashboard .tablewrap { max-height: 600px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
-.despesa-dashboard table { width: 100%; min-width: 920px; border-collapse: collapse; font-size: .78rem; }
-.despesa-dashboard th { position: sticky; top: 0; z-index: 1; padding: 0; text-align: left; background: var(--surface); }
+.despesa-dashboard th { position: sticky; top: 0; z-index: 1; text-align: left; }
 .despesa-dashboard th button { width: 100%; padding: 11px 8px; color: var(--muted); font: 700 .75rem/1.2 var(--font-ui); text-align: left; white-space: nowrap; cursor: pointer; background: transparent; border: 0; }
 .despesa-dashboard th button::after { margin-left: 5px; content: "⇅"; opacity: .45; }
 .despesa-dashboard th[aria-sort="ascending"] button::after { content: "▲"; opacity: 1; }
 .despesa-dashboard th[aria-sort="descending"] button::after { content: "▼"; opacity: 1; }
-.despesa-dashboard td { padding: 11px 8px; border-bottom: 1px solid var(--line); }
 .despesa-dashboard td:first-child { font-family: ui-monospace, Consolas, monospace; white-space: nowrap; }
 .despesa-dashboard td:nth-child(2) { min-width: 220px; }
 .despesa-dashboard td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -90,15 +76,10 @@
 .despesa-dashboard .note { color: var(--muted); font-size: .75rem; }
 
 @media (max-width: 950px) {
-  .despesa-dashboard .execution-grid, .despesa-dashboard .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .despesa-dashboard .charts { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
-  .despesa-dashboard { width: min(100% - 24px, 1200px); padding-top: 18px; }
-  .despesa-dashboard .hero { padding: 20px; }
-  .despesa-dashboard .execution-grid, .despesa-dashboard .kpi-grid { grid-template-columns: 1fr; }
-  .despesa-dashboard .tab-content { padding: 14px; }
   .despesa-dashboard .filters { align-items: stretch; }
   .despesa-dashboard .filter-control, .despesa-dashboard .secondary-action { flex-basis: 100%; }
   .despesa-dashboard .months-chart { gap: 3px; }
