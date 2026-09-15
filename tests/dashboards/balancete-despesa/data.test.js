@@ -39,6 +39,15 @@ test('loads two expense years and keeps the generated dimensions', async () => {
   assert.equal(model.current[0].resource, 'Não informado');
 });
 
+test('loads the selected manifest report when it has its own data file', async () => {
+  const model = await loadBalanceteDespesa(archive([
+    { exercicio: 2025, registros: [record(200)] },
+    { exercicio: 2026, registros: [record(250)] }
+  ]), { dataFile: 'segundo.json', visualizationIndex: 1 });
+
+  assert.equal(model.current[0].total, 250);
+});
+
 test('rejects nonnumeric expense totals and monthly values', async () => {
   await assert.rejects(
     () => loadBalanceteDespesa(archive([

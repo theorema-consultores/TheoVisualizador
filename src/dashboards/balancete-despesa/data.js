@@ -50,7 +50,7 @@ export async function loadBalanceteDespesa(archive, { protocol = '', visualizati
   const files = dataFile ? [dataFile] : archive.findByBasename('balancete-despesa.json');
   if (!files.length) throw new Error('O ZIP não contém balancete-despesa.json.');
   if (!dataFile && files.length !== 1) throw new Error('O ZIP contém mais de um balancete-despesa.json.');
-  const file = files[visualizationIndex];
+  const file = dataFile ?? files[visualizationIndex];
   if (!file) throw new Error('O ZIP não contém os dados desta visualização.');
 
   const results = archive.readJson(file)?.resultados;
