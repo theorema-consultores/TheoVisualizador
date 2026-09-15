@@ -1,7 +1,16 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { renderBalanceteDespesa } from '../../../src/dashboards/balancete-despesa/view.js';
+
+const reportStyles = [
+  'src/styles.css',
+  'src/dashboards/dashboard-shared.css',
+  'src/dashboards/balancete-receita/styles.css',
+  'src/dashboards/balancete-despesa/styles.css'
+].map(path => readFileSync(resolve(path), 'utf8').replace(/@import[^;]+;/g, '')).join('\n');
 
 const row = {
   natureDescription: '3.1.90.11 · <script>alert(1)</script>',
@@ -53,4 +62,27 @@ test('uses accessible dropdowns and renders report data as text', () => {
   assert.equal(menu.hidden, true);
   assert.equal(container.querySelector('script'), null);
   assert.match(container.textContent, /<script>alert\(1\)<\/script>/);
+});
+
+test('keeps the report toolbar, ranking descriptions and month bars within their panels', () => {
+  const dom = new JSDOM(`<style>${reportStyles}</style><main id="app"></main>`, { pretendToBeVisual: true });
+  const container = dom.window.document.getElementById('app');
+  renderBalanceteDespesa(container, model);
+
+  const toolbar = container.querySelector('.toolbar');
+  const search = toolbar.querySelector('.search-input');
+  const action = toolbar.querySelector('.secondary-action');
+  const ranking = container.querySelector('.rank');
+  const rankingLabel = container.querySelector('.rankline span');
+  const chart = container.querySelector('.months-chart');
+  const bar = chart.querySelector('.month-bar');
+
+  assert.equal(dom.window.getComputedStyle(toolbar).alignItems, 'flex-start');
+  assert.equal(dom.window.getComputedStyle(search).height, dom.window.getComputedStyle(action).height);
+  assert.equal(dom.window.getComputedStyle(action).flex, '0 0 auto');
+  assert.equal(dom.window.getComputedStyle(ranking).display, 'block');
+  assert.equal(dom.window.getComputedStyle(rankingLabel).whiteSpace, 'normal');
+  assert.equal(dom.window.getComputedStyle(bar).width, 'auto');
+  assert.equal(dom.window.getComputedStyle(bar).minWidth, '0');
+  assert.equal(dom.window.getComputedStyle(bar).flexBasis, '0px');
 });
