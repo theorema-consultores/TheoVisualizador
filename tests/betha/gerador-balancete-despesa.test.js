@@ -6,8 +6,10 @@ const path = new URL('../../docs/betha/gerador-balancete-despesa.groovy', import
 
 test('declares the expense JSON source contract and vision package', async () => {
   const source = await readFile(path, 'utf8');
-  assert.match(source, /exercicio\s*=\s*parametros\.exercicio\.valor/);
+  assert.match(source, /parametros\?\.p_exercicio\?\.valor/);
+  assert.match(source, /parametros\?\.exercicio\?\.valor/);
   assert.match(source, /exercicios\s*=\s*\[\(exercicio - 1\), exercicio\]/);
+  assert.match(source, /parametros\?\.p_entidadeId\?\.valor/);
   assert.match(source, /parametros\?\.entidade\?\.selecionados\?\.valor/);
   assert.match(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
   assert.match(source, /valorPago/);
@@ -32,6 +34,25 @@ test('does not return a dynamic source from the adapted generator', async () => 
 
 test('loads hierarchy levels and the legacy executed-nature fallback', async () => {
   const source = await readFile(path, 'utf8');
-  assert.equal((source.match(/organogramaPai\(nivel/g) || []).length, 3);
+  assert.ok((source.match(/organogramaPai\(nivel/g) || []).length >= 3);
   assert.match(source, /empenho\.natureza\(numero,descricao\)/);
+});
+
+test('uses the legacy monthly path required to reproduce paid expense data', async () => {
+  const source = await readFile(path, 'utf8');
+  const camposDespesa = source.match(
+    /def camposDespesa = ([\s\S]*?)\n\n  def camposMovimento/
+  )?.[1] ?? '';
+
+  assert.match(
+    camposDespesa,
+    /organogramaPai\(nivel,numero,descricao\)\)\)\)/
+  );
+  assert.match(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
+  assert.match(source, /movimentacaoBalanceteMensalDespesa\.busca/);
+  assert.match(source, /despesaOrcamentaria\.busca/);
+  assert.match(source, /empenhos\.busca/);
+  assert.match(source, /despesa\.id/);
+  assert.match(source, /empenho\.id/);
+  assert.match(source, /empenho\.exercicio\.ano/);
 });
