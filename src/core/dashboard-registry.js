@@ -1,8 +1,11 @@
 import { mountBalancete } from '../dashboards/balancete-receita/index.js';
 import { loadBalancete } from '../dashboards/balancete-receita/data.js';
+import { mountBalanceteDespesa } from '../dashboards/balancete-despesa/index.js';
+import { loadBalanceteDespesa } from '../dashboards/balancete-despesa/data.js';
 
 const DASHBOARDS = [
-  { id: 'balancete-receita', label: 'Balancete Receita', version: '1.0.0', page: 'dashboards/balancete-receita/', load: loadBalancete, mount: mountBalancete }
+  { id: 'balancete-receita', label: 'Balancete Receita', version: '1.0.0', page: 'dashboards/balancete-receita/', load: loadBalancete, mount: mountBalancete },
+  { id: 'balancete-despesa', label: 'Balancete Despesa', version: '1.0.0', page: 'dashboards/balancete-despesa/', load: loadBalanceteDespesa, mount: mountBalanceteDespesa }
 ];
 
 export function resolveDashboard(metadata) {
