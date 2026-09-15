@@ -7,6 +7,10 @@ const optimizedPath = new URL(
   '../../docs/betha/gerador-balancete-despesa-otimizado-teste.groovy',
   import.meta.url
 );
+const fallbackPath = new URL(
+  '../../docs/betha/gerador-balancete-despesa-otimizado-fallback-teste.groovy',
+  import.meta.url
+);
 
 test('declares the expense JSON source contract and vision package', async () => {
   const source = await readFile(path, 'utf8');
@@ -69,4 +73,15 @@ test('trial source loads all months in one query per entity and year', async () 
   assert.match(source, /" and mes <= " \+ MES_FIM/);
   assert.doesNotMatch(source, /\(MES_INICIO\.\.MES_FIM\)\.each \{ mes ->/);
   assert.match(source, /balancete-despesa-otimizado-teste\.json/);
+});
+
+test('fallback trial skips the failed annual API and notification wrapper', async () => {
+  const source = await readFile(fallbackPath, 'utf8').catch(() => '');
+
+  assert.match(source, /def buscarMovimentosAno\s*=/);
+  assert.match(source, /movimentacaoBalanceteMensalDespesa\.busca/);
+  assert.doesNotMatch(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
+  assert.doesNotMatch(source, /notificacoesUtil\.setMsgError/);
+  assert.doesNotMatch(source, /catch \(Exception/);
+  assert.match(source, /balancete-despesa-otimizado-fallback-teste\.json/);
 });
