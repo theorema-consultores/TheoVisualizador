@@ -22,6 +22,22 @@ test('keeps analytical records and orders exercises', async () => {
   assert.equal(model.entityName, 'Prefeitura');
 });
 
+test('loads the selected manifest report when it has its own data file', async () => {
+  const archive = {
+    readJson: file => {
+      assert.equal(file, 'segundo.json');
+      return { resultados: [
+        { exercicio: 2025, registros: [record(2025)] },
+        { exercicio: 2024, registros: [record(2024)] }
+      ] };
+    }
+  };
+
+  const model = await loadBalancete(archive, { dataFile: 'segundo.json', visualizationIndex: 1 });
+
+  assert.equal(model.current[0].total, 2025);
+});
+
 test('extracts execution user, issue times and protocol from the real report metadata', async () => {
   const archive = { findByBasename: () => ['balancete-receita.json'], readJson: () => ({ resultados: [
     {

@@ -5,7 +5,7 @@ import test from 'node:test';
 const path = new URL('../../docs/betha/gerador-balancete-despesa.groovy', import.meta.url);
 
 test('declares the expense JSON source contract and registers in the caller vision', async () => {
-  const source = await readFile(path, 'utf8');
+  const source = (await readFile(path, 'utf8')).replace(/\r\n/g, '\n');
   assert.match(source, /parametros\?\.p_exercicio\?\.valor/);
   assert.match(source, /parametros\?\.exercicio\?\.valor/);
   assert.match(source, /exercicios\s*=\s*\[\(exercicio - 1\), exercicio\]/);
@@ -29,20 +29,20 @@ test('declares the expense JSON source contract and registers in the caller visi
 });
 
 test('does not return a dynamic source from the adapted generator', async () => {
-  const source = await readFile(path, 'utf8');
+  const source = (await readFile(path, 'utf8')).replace(/\r\n/g, '\n');
   assert.doesNotMatch(source, /Dados\.dinamico\.v2\.novo/);
   assert.match(source, /arquivoResultado\.escreverObjeto/);
 });
 
 test('loads hierarchy levels and the legacy executed-nature fallback', async () => {
-  const source = await readFile(path, 'utf8');
+  const source = (await readFile(path, 'utf8')).replace(/\r\n/g, '\n');
   assert.ok((source.match(/organogramaPai\(nivel/g) || []).length >= 3);
   assert.match(source, /def camposEmpenho = "id, natureza\(numero,descricao\)/);
   assert.match(source, /empenho\?\.natureza/);
 });
 
 test('queries the annual exercise source once with only used fields', async () => {
-  const source = await readFile(path, 'utf8');
+  const source = (await readFile(path, 'utf8')).replace(/\r\n/g, '\n');
   const camposDespesa = source.match(
     /def camposDespesa = ([\s\S]*?)\n\n  def camposMovimento/
   )?.[1] ?? '';
