@@ -15,6 +15,7 @@ test('uses one shared visual frame for both balance dashboards', () => {
   const styles = readFileSync(new URL('../../../src/dashboards/dashboard-shared.css', import.meta.url), 'utf8');
   assert.match(styles, /\.balancete,\s*\.despesa-dashboard\s*\{/s);
   assert.match(styles, /\.balancete \.hero,\s*\.despesa-dashboard \.hero\s*\{/s);
+  assert.match(styles, /\.balancete \.hero h1,\s*\.despesa-dashboard \.hero h1\s*\{[^}]*font:\s*700 clamp\(1\.5rem, 2\.4vw, 2rem\)/s);
   assert.match(styles, /\.balancete \.execution-panel,\s*\.despesa-dashboard \.execution-panel\s*\{/s);
   assert.match(styles, /\.balancete \.tab-content,\s*\.despesa-dashboard \.tab-content\s*\{/s);
 });
