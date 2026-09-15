@@ -49,7 +49,7 @@ test('loads hierarchy levels and the legacy executed-nature fallback', async () 
   assert.match(source, /empenho\?\.natureza/);
 });
 
-test('reads paid expense one month at a time with the required movement fields', async () => {
+test('uses the legacy exercise source with the complete movement projection', async () => {
   const source = await readFile(path, 'utf8');
   const camposDespesa = source.match(
     /def camposDespesa = ([\s\S]*?)\n\n  def camposMovimento/
@@ -62,10 +62,11 @@ test('reads paid expense one month at a time with the required movement fields',
     camposDespesa,
     /organogramaPai\(nivel,numero,descricao\)\)\)\)/
   );
-  assert.match(source, /movimentacaoBalanceteMensalDespesa\.busca/);
-  assert.doesNotMatch(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
+  assert.match(source, /movimentacaoBalanceteMensalDespesaExercicio\.busca/);
+  assert.doesNotMatch(source, /movimentacaoBalanceteMensalDespesa\.busca/);
   assert.match(source, /\(MES_INICIO\.\.MES_FIM\)\.each \{ mes ->/);
   assert.match(source, /" and mes = " \+ mes/);
+  assert.match(source, /parametros: \[exercicio: ano\]/);
   assert.doesNotMatch(source, /" and mes >= " \+ MES_INICIO/);
   assert.doesNotMatch(source, /" and mes <= " \+ MES_FIM/);
   assert.match(source, /despesaOrcamentaria\.busca/);
@@ -73,11 +74,11 @@ test('reads paid expense one month at a time with the required movement fields',
   assert.match(camposMovimento, /entidade\(id,nome\)/);
   assert.match(camposMovimento, /despesa\.id/);
   assert.match(camposMovimento, /empenho\.id/);
-  assert.match(camposMovimento, /recurso\(numero,descricao\)/);
-  assert.match(camposMovimento, /valorPago, mes, tipoRegistro/);
-  assert.doesNotMatch(camposMovimento, /despesa\(organograma/);
-  assert.doesNotMatch(camposMovimento, /empenho\.exercicio\.ano/);
-  assert.doesNotMatch(camposMovimento, /recursoVinculo/);
+  assert.match(camposMovimento, /despesa\(organograma\(nivel,numero,descricao/);
+  assert.match(camposMovimento, /empenho\.natureza\(numero,descricao\)/);
+  assert.match(camposMovimento, /recurso\(id,numero,descricao,superavitFinanceiro\)/);
+  assert.match(camposMovimento, /valorPago, mes, tipoRegistro, despesa\.natureza\.nivel/);
+  assert.match(camposMovimento, /empenho\.recursoVinculoDetalhamento\.recurso/);
 });
 
 test('trial source loads all months in one query per entity and year', async () => {

@@ -58,7 +58,7 @@
 
   final def MES_INICIO = 1
   final def MES_FIM = 12
-  final def VERSAO_GERADOR = "2026-09-14-07"
+  final def VERSAO_GERADOR = "2026-09-14-08"
 
   def texto = { value -> value == null ? "" : String.valueOf(value).trim() }
   def mesesZerados = {
@@ -80,8 +80,15 @@
     "organograma(nivel,numero,descricao,organogramaPai(nivel,numero,descricao, " +
     "organogramaPai(nivel,numero,descricao,organogramaPai(nivel,numero,descricao))))"
 
-  def camposMovimento = "entidade(id,nome), despesa.id, empenho.id, " +
-    "recurso(numero,descricao), valorPago, mes, tipoRegistro"
+  def camposMovimento = "id, entidade(id,nome), despesa.id, empenho.id, " +
+    "empenho.exercicio.ano, despesa.organograma(numero,descricao), " +
+    "despesa(organograma(nivel,numero,descricao,organogramaPai(nivel,numero,descricao, " +
+    "organogramaPai(nivel,numero,descricao,organogramaPai(nivel,numero,descricao))))), " +
+    "despesa.funcao(numero,descricao), despesa.natureza(numero,descricao), " +
+    "empenho.natureza(numero,descricao), recurso(id,numero,descricao,superavitFinanceiro), " +
+    "valorPago, mes, tipoRegistro, despesa.natureza.nivel, " +
+    "empenho.recursoVinculo.recurso(id,numero,descricao,superavitFinanceiro), " +
+    "empenho.recursoVinculoDetalhamento.recurso(id,numero,descricao,superavitFinanceiro)"
 
   def camposEmpenho = "id, natureza(id,numero,descricao), exercicio.ano, " +
     "recursoVinculo.recurso(id,numero,descricao,superavitFinanceiro), " +
@@ -120,9 +127,10 @@
         " and entidade.id in (" + entidade + ")" +
         " and mes = " + mes
 
-      Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesa.busca(
+      Dados.contabilidade.v1.movimentacaoBalanceteMensalDespesaExercicio.busca(
         campos: camposMovimento,
-        criterio: criterio
+        criterio: criterio,
+        parametros: [exercicio: ano]
       ).each { item ->
         movimentos << item
       }
