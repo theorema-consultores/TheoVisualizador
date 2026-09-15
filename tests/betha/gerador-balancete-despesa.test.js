@@ -3,6 +3,10 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const path = new URL('../../docs/betha/gerador-balancete-despesa.groovy', import.meta.url);
+const optimizedPath = new URL(
+  '../../docs/betha/gerador-balancete-despesa-otimizado-teste.groovy',
+  import.meta.url
+);
 
 test('declares the expense JSON source contract and vision package', async () => {
   const source = await readFile(path, 'utf8');
@@ -55,4 +59,14 @@ test('uses the legacy monthly path required to reproduce paid expense data', asy
   assert.match(source, /despesa\.id/);
   assert.match(source, /empenho\.id/);
   assert.match(source, /empenho\.exercicio\.ano/);
+});
+
+test('trial source loads all months in one query per entity and year', async () => {
+  const source = await readFile(optimizedPath, 'utf8').catch(() => '');
+
+  assert.match(source, /def buscarMovimentosAno\s*=/);
+  assert.match(source, /" and mes >= " \+ MES_INICIO/);
+  assert.match(source, /" and mes <= " \+ MES_FIM/);
+  assert.doesNotMatch(source, /\(MES_INICIO\.\.MES_FIM\)\.each \{ mes ->/);
+  assert.match(source, /balancete-despesa-otimizado-teste\.json/);
 });
