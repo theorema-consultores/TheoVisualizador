@@ -16,12 +16,13 @@ function iconFor(item) {
   return 'dashboard';
 }
 
-export function renderReportNavigation(container, { visualizations, activeIndex, onSelect, storage, logoUrl = '' }) {
+export function renderReportNavigation(container, { visualizations, activeIndex, onSelect, municipality = '', storage, logoUrl = '' }) {
   const doc = container.ownerDocument;
   const sidebar = doc.createElement('aside');
   sidebar.className = 'app-sidebar';
   sidebar.setAttribute('aria-label', 'Navegação principal');
-  sidebar.innerHTML = `<a class="brand" href="./?home=1" aria-label="Theorema Visualizador"><img src="${logoUrl}" alt="Theorema Consultores" /></a><p class="sidebar-eyebrow">Dashboards</p><nav class="sidebar-navigation" aria-label="Dashboards disponíveis"><div class="visualization-menu"></div></nav><div class="sidebar-footer"><span class="material-symbols-rounded" aria-hidden="true">account_balance</span><div><strong>Theorema</strong><span>Visualizador de relatórios</span></div></div>`;
+  sidebar.innerHTML = `<a class="brand" href="./?home=1" aria-label="Theorema Visualizador"><img src="${logoUrl}" alt="Theorema Consultores" /></a><p class="sidebar-eyebrow">Dashboards</p><nav class="sidebar-navigation" aria-label="Dashboards disponíveis"><div class="visualization-menu"></div></nav><div class="sidebar-footer"><span class="material-symbols-rounded" aria-hidden="true">account_balance</span><div><strong class="municipality-name"></strong><span>Gestão pública com transparência</span></div></div>`;
+  sidebar.querySelector('.municipality-name').textContent = municipality || 'Município não informado';
 
   const nav = doc.createElement('header');
   nav.className = 'app-nav';

@@ -15,9 +15,13 @@ export async function startDashboard({ id, version, dashboard, bytes: providedBy
   const index = Math.min(Math.max(visualizationIndex, 0), metadata.length - 1);
   const selectedDashboard = dashboard ?? resolveDashboard(metadata[index]);
   if ((selectedDashboard.id !== id || selectedDashboard.version !== version) && !dashboard) throw new Error('Este relatório pertence a outro dashboard.');
+  const context = metadata.length > 1 ? { protocol, visualizationIndex: index, visualizationCount: metadata.length } : { protocol };
+  const loadContext = metadata[index].arquivo ? { ...context, dataFile: metadata[index].arquivo } : context;
+  const model = await load(archive, loadContext);
   onVisualizations?.({
     count: metadata.length,
     index,
+    municipality: model.entityName,
     select: next => {
       const selectedIndex = Math.min(Math.max(next, 0), metadata.length - 1);
       const nextDashboard = resolveDashboard(metadata[selectedIndex]);
@@ -26,7 +30,7 @@ export async function startDashboard({ id, version, dashboard, bytes: providedBy
         version: nextDashboard.version,
         dashboard: nextDashboard,
         load: nextDashboard.load,
-        render: (target, model) => nextDashboard.mount(target, { model }),
+        render: (target, nextModel) => nextDashboard.mount(target, { model: nextModel }),
         bytes,
         session,
         transferStore: { take: async () => bytes },
@@ -38,7 +42,5 @@ export async function startDashboard({ id, version, dashboard, bytes: providedBy
     },
     visualizations: metadata.map(item => resolveDashboard(item))
   });
-  const context = metadata.length > 1 ? { protocol, visualizationIndex: index, visualizationCount: metadata.length } : { protocol };
-  const loadContext = metadata[index].arquivo ? { ...context, dataFile: metadata[index].arquivo } : context;
-  return render(container, await load(archive, loadContext));
+  return render(container, model);
 }

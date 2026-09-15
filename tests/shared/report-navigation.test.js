@@ -53,6 +53,19 @@ test('labels the dashboard menu with concise report names', () => {
   assert.equal(dom.window.document.querySelector('.breadcrumb-current').textContent, 'Receita');
 });
 
+test('shows the municipality provided by the loaded report', () => {
+  const dom = new JSDOM('<main id="app"></main>', { url: 'https://example.test/' });
+  const container = dom.window.document.querySelector('main');
+  renderReportNavigation(container, {
+    visualizations: [{ id: 'balancete-receita', label: 'Balancete Receita' }],
+    activeIndex: 0,
+    municipality: 'Prefeitura de Sertaneja',
+    onSelect() {},
+    storage: dom.window.localStorage
+  });
+  assert.equal(dom.window.document.querySelector('.municipality-name').textContent, 'Prefeitura de Sertaneja');
+});
+
 test('keeps duplicate labels distinguishable in the dashboard menu', () => {
   const dom = new JSDOM('<main id="app"></main>', { url: 'https://example.test/' });
   const container = dom.window.document.querySelector('main');

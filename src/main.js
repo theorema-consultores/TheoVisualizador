@@ -31,9 +31,9 @@ const mount = ({ dashboard, bytes }) => startDashboard({
   transferStore,
   download: downloadResult,
   container: app,
-  onVisualizations: ({ visualizations, index, select }) => {
+  onVisualizations: ({ visualizations, index, select, municipality }) => {
     navigation?.destroy();
-    navigation = renderReportNavigation(app, { visualizations, activeIndex: index, onSelect: select, storage: window.localStorage, logoUrl });
+    navigation = renderReportNavigation(app, { visualizations, activeIndex: index, onSelect: select, municipality, storage: window.localStorage, logoUrl });
   }
 }).then(result => {
   document.title = `${dashboard.label} · TheoView`;
