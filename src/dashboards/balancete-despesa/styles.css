@@ -1,17 +1,5 @@
 @import '../../styles.css';
 
-.despesa-dashboard .hero {
-  padding: 28px;
-  color: var(--text);
-  background: var(--surface-raised);
-  border: 1px solid var(--line);
-  border-bottom: 4px solid var(--brand-brown);
-  border-radius: 7px;
-}
-
-.despesa-dashboard .hero h1 { margin: 7px 0 10px; font-size: clamp(1.65rem, 3vw, 2rem); line-height: 1.2; }
-.despesa-dashboard .eyebrow { color: var(--brand-brown); font-size: .75rem; font-weight: 700; letter-spacing: .1em; }
-.despesa-dashboard .hero-detail { margin: 0; color: var(--muted); }
 .despesa-dashboard .source-panel { padding: 16px 20px; margin: 20px 0; background: var(--surface-raised); border: 1px solid var(--line); border-left: 4px solid var(--action); border-radius: 6px; }
 .despesa-dashboard .source-panel strong { color: var(--action-dark); }
 .despesa-dashboard .source-panel p { margin: 6px 0 0; }

@@ -17,6 +17,10 @@ test('uses one shared visual frame for both balance dashboards', () => {
   assert.match(styles, /\.balancete,\s*\.despesa-dashboard\s*\{/s);
   assert.match(styles, /width:\s*min\(1400px,\s*calc\(100%\s*-\s*48px\)\)/);
   assert.doesNotMatch(expenseStyles, /width:\s*min\(1200px/);
+  assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.hero\s*\{[^}]*\b(?:color|background|border)\s*:/s);
+  assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.hero h1/);
+  assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.eyebrow/);
+  assert.doesNotMatch(expenseStyles, /\.despesa-dashboard \.hero-detail/);
   assert.match(styles, /\.balancete \.hero,\s*\.despesa-dashboard \.hero\s*\{/s);
   assert.match(styles, /\.balancete \.hero h1,\s*\.despesa-dashboard \.hero h1\s*\{[^}]*font:\s*700 clamp\(1\.5rem, 2\.4vw, 2rem\)/s);
   assert.match(styles, /\.balancete \.execution-panel,\s*\.despesa-dashboard \.execution-panel\s*\{/s);
